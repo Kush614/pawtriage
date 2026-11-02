@@ -1,0 +1,28 @@
+{
+ "_note": "USD per 1M tokens, Fireworks serverless Standard tier (non-cached input). Source: docs.fireworks.ai/serverless/pricing, fetched 2026-11-02. Fine-tuned (LoRA) serverless serving is priced the same as its base model (fireworks.ai/pricing). Serverless training: GLM 5.3 Flash $8.89/1M train tokens.",
+ "verified": true,
+ "date": "2026-11-02",
+ "models": {
+  "_default": {
+   "input_per_m": 1.0,
+   "output_per_m": 3.0
+  },
+  "accounts/fireworks/models/glm-5p3-flash": {
+   "input_per_m": 0.15,
+   "output_per_m": 0.5
+  },
+  "accounts/fireworks/models/glm-5p3": {
+   "input_per_m": 1.4,
+   "output_per_m": 4.4
+  },
+  "accounts/fireworks/models/kimi-k3": {
+   "input_per_m": 3.0,
+   "output_per_m": 15.0
+  },
+  "accounts/kushise27-y1gkfyqxpn/models/pawtriage": {
+   "input_per_m": 0.0,
+   "output_per_m": 0.0,
+   "_note": "dedicated 4xB300 deployment; billed per GPU-hour, see deployment_usd_per_1k"
+  }
+ }
+}

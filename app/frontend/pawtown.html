@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PawTown SF</title>
+<style>
+  :root { --bg:#bfe6ff; --panel:#fffdf7; --ink:#2b2a33; --muted:#6b6878; --line:#e8e2d4; --accent:#ff7a59;
+          --em:#e5322d; --today:#ff8a00; --week:#e6b800; --home:#2fa84f; --info:#3478f6; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif;
+              color:var(--ink); background:var(--bg); overflow:hidden; }
+  #scene { position:fixed; inset:0; }
+  #labels { position:fixed; inset:0; pointer-events:none; }
+  .lbl { font-size:12px; font-weight:700; padding:2px 8px; border-radius:999px; background:#fffdf7e6; border:2px solid #2b2a3320;
+         white-space:nowrap; transform:translateY(-6px); }
+  .lbl.hood { font-size:13px; background:#2b2a33cc; color:#fff; border:none; }
+  .lbl.vet { background:#fff; border-color:#3478f655; }
+  .lbl.er { background:var(--em); color:#fff; border:none; }
+  .lbl.pet { font-size:13px; }
+  .lbl.member { font-size:16px; background:none; border:none; padding:0; }
+  .lbl.timer { background:#fff3d6; border-color:#e6b80088; font-size:11px; }
+  .lbl.timer.late { background:var(--today); color:#fff; animation: bob 0.9s infinite alternate; }
+  @keyframes bob { to { transform: translateY(-14px); } }
+  #hud { position:fixed; top:12px; left:12px; right:12px; display:flex; gap:8px; align-items:center; pointer-events:none; flex-wrap:wrap; }
+  #hud > * { pointer-events:auto; }
+  .chip { background:var(--panel); border-radius:14px; padding:8px 12px; box-shadow:0 3px 0 #2b2a3322; font-weight:700; font-size:14px; }
+  .chip small { color:var(--muted); font-weight:600; }
+  button { font:inherit; border:none; border-radius:12px; padding:7px 12px; background:var(--accent); color:#fff; font-weight:700;
+           cursor:pointer; box-shadow:0 3px 0 #b8492f; }
+  button.ghost { background:#fff; color:var(--ink); box-shadow:0 3px 0 #2b2a3322; }
+  button.small { padding:4px 9px; font-size:12px; }
+  button:active { transform:translateY(2px); box-shadow:none; }
+  select, input { font:inherit; border:2px solid var(--line); border-radius:10px; padding:5px 8px; background:#fff; }
+  #panel { position:fixed; top:64px; right:12px; bottom:12px; width:380px; max-width:calc(100vw - 24px); background:var(--panel);
+           border-radius:20px; box-shadow:0 6px 0 #2b2a3322; overflow:auto; padding:14px; }
+  #panel.collapsed { display:none; }
+  h2 { font-size:16px; margin:14px 0 6px; } h2:first-child { margin-top:0; }
+  .petcard { border:2px solid var(--line); border-radius:14px; padding:8px 10px; margin-bottom:8px; cursor:pointer; }
+  .petcard.sel { border-color:var(--accent); }
+  .pill { display:inline-block; font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; color:#fff; }
+  .u-emergency_now{background:var(--em)} .u-vet_today{background:var(--today)} .u-vet_this_week{background:var(--week)}
+  .u-monitor_at_home{background:var(--home)} .u-none{background:#9a96a8}
+  .quest { display:flex; gap:8px; align-items:flex-start; padding:7px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .quest.done { opacity:.5; } .quest .t { flex:1; } .quest .meta { color:var(--muted); font-size:11px; }
+  .kind { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:1px 6px; border-radius:6px; background:#eee; }
+  .k-contagion{background:#efe2ff;color:#6a2fc9} .k-med{background:#ffe2e2;color:#b02020} .k-recheck{background:#fff1c9;color:#8a6500}
+  .k-immediate{background:#ffe6d9;color:#b8492f} .k-watch{background:#e6f1ff;color:#2453a6}
+  .ev { font-size:12px; padding:4px 0; border-bottom:1px solid #f1ede3; } .ev time { color:var(--muted); font-size:10px; margin-right:6px; }
+  .ev.scan { color:#2453a6; font-weight:700; } .ev.warning { color:#b02020; font-weight:700; } .ev.contagion { color:#6a2fc9; } .ev.emergency { color:var(--em); font-weight:800; }
+  .board { display:flex; gap:6px; flex-wrap:wrap; } .board .chip { box-shadow:none; border:2px solid var(--line); font-size:13px; }
+  .badge { display:inline-flex; gap:4px; align-items:center; background:#fff7e0; border-radius:10px; padding:4px 8px; margin:2px; font-size:12px; font-weight:700; }
+  .muted { color:var(--muted); font-size:12px; }
+  #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 16px;
+           border-radius:14px; font-weight:700; display:none; max-width:90vw; z-index:20; }
+  #emerg { position:fixed; inset:0; display:none; pointer-events:none; box-shadow: inset 0 0 0 10px var(--em); z-index:10; }
+  #emergCard { position:fixed; left:12px; bottom:12px; width:420px; max-width:calc(100vw - 24px); background:var(--em); color:#fff; border-radius:20px;
+               padding:16px; display:none; z-index:11; box-shadow:0 6px 0 #8f1a17; }
+  #emergCard h1 { margin:0 0 6px; font-size:22px; } #emergCard button { background:#fff; color:var(--em); box-shadow:0 3px 0 #8f1a17; }
+  #emergCard a { color:#fff; font-weight:800; }
+  #popup { position:fixed; display:none; background:var(--panel); border-radius:14px; padding:10px 12px; box-shadow:0 4px 0 #2b2a3333; font-size:13px;
+           max-width:260px; z-index:12; }
+  .fwchip { display:inline-block; background:#2b2a33; color:#fff; border-radius:999px; padding:2px 8px; font-size:11px; font-weight:700; }
+  .fwchip b { color:#ffb36b; }
+  #lab table { border-collapse:collapse; width:100%; font-size:13px; } #lab td, #lab th { border-bottom:1px solid var(--line); padding:6px; text-align:left; }
+  #lab img { max-width:100%; border-radius:12px; border:2px solid var(--line); }
+  #attr { position:fixed; left:12px; bottom:8px; font-size:10px; color:#2b2a33aa; }
+  #attr a { color:inherit; }
+  @media (max-width: 700px) { #panel { top:auto; height:55vh; width:auto; left:12px; } #emergCard { bottom:auto; top:64px; } }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<div id="scene"></div>
+<div id="labels"></div>
+<div id="emerg"></div>
+
+<div id="hud">
+  <div class="chip">🐾 PawTown SF <small id="denName"></small></div>
+  <div class="chip" id="fogChip" title="Fog clears as the Den finishes its care steps">🌫️ <span id="fogPct">–</span></div>
+  <div class="chip">Den <select id="denPick"></select></div>
+  <div class="chip">View as <select id="viewAs"></select></div>
+  <button class="ghost" id="btnSeed" title="Creates a demo Den + 1 real photo triage (≈$0.001)">Seed demo Den</button>
+  <button class="ghost" id="btnWalker" title="Adds a 2nd Den where Jordan also walks a dog (no model call)">+ Walker's 2nd Den</button>
+  <button class="ghost" id="btnTime" title="Demo clock: move every timer forward 24h">⏩ +24h</button>
+  <button class="ghost" id="btnEmerg" title="Real triage call (≈$0.001): text that should trigger the emergency rules">Demo: Pepper ate chocolate</button>
+  <a href="/" style="pointer-events:auto"><button class="ghost">Triage app ↗</button></a>
+  <a id="scanLink" target="_blank" style="pointer-events:auto;display:none"><button class="ghost" title="Scans of a pet whose name matches a Den pet land here as a case">📷 Live scan ↗</button></a>
+  <button id="btnPanel">Den ▸</button>
+</div>
+
+<div id="panel"></div>
+<div id="emergCard"></div>
+<div id="popup"></div>
+<div id="lab" style="position:fixed;inset:5vh 5vw;background:var(--panel);border-radius:20px;box-shadow:0 8px 0 #2b2a3333;z-index:30;display:none;overflow:auto;padding:18px"></div>
+<div id="toast"></div>
+<div id="attr">Map data <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a> (ODbL) · cartoon geometry is approximate · PawTriage is triage support, not a diagnosis</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+// ---------------------------------------------------------------- projection (1 unit ≈ 100 m)
+const LAT0 = 37.765, LON0 = -122.445, K = 1113.2, CL = Math.cos(LAT0 * Math.PI / 180);
+const P = (lat, lon) => new THREE.Vector3((lon - LON0) * K * CL, 0, -(lat - LAT0) * K);
+const haversineKm = (a, b) => { const R = 6371, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lon - a.lon) * r;
+  const h = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
+
+const HOODS = {
+  "Mission":         { lat: 37.7599, lon: -122.4148, color: 0xffb36b },
+  "Dolores Park":    { lat: 37.7596, lon: -122.4269, color: 0x8fd16a },
+  "Golden Gate Park":{ lat: 37.7694, lon: -122.4862, color: 0x5cb85c },
+  "Presidio":        { lat: 37.7989, lon: -122.4662, color: 0x4f9d55 },
+  "Crissy Field":    { lat: 37.8039, lon: -122.4641, color: 0xf3dc9b },
+  "Fort Funston":    { lat: 37.7178, lon: -122.5023, color: 0xf0d58c },
+  "Bernal Heights":  { lat: 37.7429, lon: -122.4155, color: 0x9fd49a },
+  "Ocean Beach":     { lat: 37.7594, lon: -122.5097, color: 0xf6e1a8 },
+  "Alamo Square":    { lat: 37.7764, lon: -122.4346, color: 0xa7d98a },
+};
+
+// ---------------------------------------------------------------- renderer / scene
+const host = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+host.appendChild(renderer.domElement);
+const labelR = new CSS2DRenderer({ element: document.getElementById('labels') });
+labelR.setSize(innerWidth, innerHeight);
+
+const scene = new THREE.Scene();
+const SKY = new THREE.Color(0xbfe6ff), SKY_RED = new THREE.Color(0x5a1b1b);
+scene.background = SKY.clone();
+scene.fog = new THREE.Fog(0xdfeff8, 120, 420);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.5, 2000);
+camera.position.set(40, 110, 150);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0); controls.enableDamping = true; controls.maxPolarAngle = 1.35; controls.minDistance = 15; controls.maxDistance = 400;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x88aa77, 1.1));
+const sun = new THREE.DirectionalLight(0xfff2d6, 1.6);
+sun.position.set(-80, 160, 60); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -120, right: 120, top: 120, bottom: -120, far: 500 });
+scene.add(sun);
+
+const pickables = [];
+const toon = (c, extra = {}) => new THREE.MeshToonMaterial({ color: c, ...extra });
+const mesh = (geo, mat, pos, opts = {}) => { const m = new THREE.Mesh(geo, mat); if (pos) m.position.copy(pos);
+  m.castShadow = opts.cast ?? true; m.receiveShadow = opts.receive ?? true; return m; };
+const label = (html, cls, obj, y = 3) => { const d = document.createElement('div'); d.className = 'lbl ' + cls; d.innerHTML = html;
+  const o = new CSS2DObject(d); o.position.set(0, y, 0); obj.add(o); return o; };
+
+// ---------------------------------------------------------------- water + land (cartoon SF outline)
+const water = mesh(new THREE.CircleGeometry(700, 64), toon(0x5fc4e8), null, { cast: false });
+water.rotation.x = -Math.PI / 2; water.position.y = -0.6; scene.add(water);
+const COAST = [[37.7880,-122.5060],[37.7790,-122.5135],[37.7600,-122.5110],[37.7350,-122.5070],[37.7080,-122.5030],
+  [37.7080,-122.4600],[37.7080,-122.3930],[37.7200,-122.3780],[37.7300,-122.3650],[37.7420,-122.3740],[37.7550,-122.3860],
+  [37.7700,-122.3870],[37.7820,-122.3880],[37.7950,-122.3920],[37.8060,-122.4030],[37.8090,-122.4180],[37.8070,-122.4320],
+  [37.8060,-122.4480],[37.8040,-122.4650],[37.8100,-122.4770],[37.8040,-122.4830],[37.7900,-122.4860],[37.7880,-122.5060]];
+const shape = new THREE.Shape(COAST.map(([la, lo]) => { const v = P(la, lo); return new THREE.Vector2(v.x, -v.z); }));
+const landGeo = new THREE.ExtrudeGeometry(shape, { depth: 1.2, bevelEnabled: true, bevelThickness: 0.6, bevelSize: 1.2, bevelSegments: 3 });
+landGeo.rotateX(-Math.PI / 2);
+scene.add(mesh(landGeo, toon(0xf4e7c5), null, { cast: false }));
+// Marin headlands across the Gate
+const marin = mesh(new THREE.SphereGeometry(30, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(0x97c97a), P(37.838, -122.485));
+marin.scale.set(1.4, 0.35, 0.5); scene.add(marin);
+const G = 1.8; // ground top
+
+// Golden Gate Park strip
+{ const a = P(37.7735, -122.5105), b = P(37.7655, -122.4545);
+  const w = b.x - a.x, d = b.z - a.z;
+  const park = mesh(new THREE.BoxGeometry(w, 0.5, Math.abs(d)), toon(0x6cc070), new THREE.Vector3((a.x + b.x) / 2, G, (a.z + b.z) / 2));
+  scene.add(park);
+  for (let i = 0; i < 26; i++) tree(new THREE.Vector3(a.x + Math.random() * w, G, a.z + Math.random() * d), 0.8 + Math.random() * 0.6);
+}
+// Presidio forest
+for (let i = 0; i < 30; i++) { const c = P(37.7989, -122.4662); tree(new THREE.Vector3(c.x + (Math.random() - .5) * 26, G, c.z + (Math.random() - .5) * 14), 0.9 + Math.random() * .6); }
+// hills
+function hill(lat, lon, r, h, c) { const m = mesh(new THREE.SphereGeometry(r, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(c), P(lat, lon)); m.scale.y = h / r; m.position.y = G - .2; scene.add(m); return m; }
+hill(37.7544, -122.4477, 9, 7, 0x9fcf7f);   // Twin Peaks
+hill(37.7429, -122.4155, 6, 4, 0x9fd49a);   // Bernal
+hill(37.7300, -122.4500, 7, 3, 0xb2d78f);   // Mt Davidson-ish
+function tree(pos, s = 1) {
+  const g = new THREE.Group(); g.position.copy(pos);
+  g.add(mesh(new THREE.CylinderGeometry(.15 * s, .2 * s, 1 * s), toon(0x8b5a2b), new THREE.Vector3(0, .5 * s, 0)));
+  g.add(mesh(new THREE.ConeGeometry(.9 * s, 2 * s, 7), toon(0x3f9b4b), new THREE.Vector3(0, 1.9 * s, 0)));
+  scene.add(g); return g;
+}
+
+// ---------------------------------------------------------------- landmarks from primitives
+{ // Golden Gate Bridge: south tower 37.8105,-122.4777 to north 37.8270,-122.4790
+  const s = P(37.8105, -122.4777), n = P(37.8300, -122.4790), red = toon(0xd9502b);
+  const len = s.distanceTo(n), mid = s.clone().add(n).multiplyScalar(.5);
+  const deck = mesh(new THREE.BoxGeometry(2.2, .5, len), red, mid); deck.position.y = 5; deck.lookAt(n.x, 5, n.z); scene.add(deck);
+  for (const t of [s.clone().lerp(n, .18), s.clone().lerp(n, .82)]) {
+    for (const dx of [-.9, .9]) scene.add(mesh(new THREE.BoxGeometry(.5, 14, .5), red, new THREE.Vector3(t.x + dx, 7, t.z)));
+    scene.add(mesh(new THREE.BoxGeometry(2.4, .5, .5), red, new THREE.Vector3(t.x, 13, t.z)));
+  }
+  const curve = new THREE.CatmullRomCurve3([s.clone().setY(5), s.clone().lerp(n, .18).setY(13.5), s.clone().lerp(n, .5).setY(7),
+                                             s.clone().lerp(n, .82).setY(13.5), n.clone().setY(5)]);
+  for (const dx of [-1, 1]) { const c = mesh(new THREE.TubeGeometry(curve, 40, .12, 6), red); c.position.x = dx; scene.add(c); }
+}
+{ // Painted Ladies (Alamo Square)
+  const a = P(37.7762, -122.4329), cols = [0xf7a1c4, 0x9fd8f5, 0xfbe28a, 0xb7e4a8, 0xd6b4f7, 0xffc39e, 0xa8e6e0];
+  cols.forEach((c, i) => { const g = new THREE.Group(); g.position.set(a.x + i * 1.3, G, a.z + 3);
+    g.add(mesh(new THREE.BoxGeometry(1.1, 2, 1.4), toon(c), new THREE.Vector3(0, 1, 0)));
+    const roof = mesh(new THREE.ConeGeometry(.95, 1, 4), toon(0x6b4a6e), new THREE.Vector3(0, 2.5, 0)); roof.rotation.y = Math.PI / 4; g.add(roof);
+    scene.add(g); });
+}
+{ // Sutro Tower
+  const p = P(37.7552, -122.4528); p.y = G + 6;
+  for (const a of [0, 2.09, 4.19]) { const leg = mesh(new THREE.CylinderGeometry(.15, .3, 14), toon(0xe04040), p.clone().add(new THREE.Vector3(Math.cos(a) * 1.2, 7, Math.sin(a) * 1.2))); leg.rotation.z = Math.cos(a) * .08; leg.rotation.x = -Math.sin(a) * .08; scene.add(leg); }
+  for (const y of [9, 12]) scene.add(mesh(new THREE.TorusGeometry(1.1, .12, 6, 12), toon(0xffffff), p.clone().add(new THREE.Vector3(0, y, 0))).rotateX(Math.PI / 2));
+}
+{ // Transamerica + downtown blocks
+  const t = P(37.7952, -122.4028); scene.add(mesh(new THREE.ConeGeometry(1.6, 12, 4), toon(0xeeeeee), t.clone().setY(G + 6)));
+  for (let i = 0; i < 22; i++) { const h = 2 + Math.random() * 7; scene.add(mesh(new THREE.BoxGeometry(1.6, h, 1.6), toon([0xcfd8e3, 0xb8c6d6, 0xe3e8ee][i % 3]),
+    new THREE.Vector3(t.x + (Math.random() - .3) * 12, G + h / 2, t.z + (Math.random() - .1) * 12))); }
+  const coit = P(37.8024, -122.4058); scene.add(mesh(new THREE.CylinderGeometry(.7, .8, 6, 14), toon(0xf2efe6), coit.setY(G + 3)));
+}
+
+// ---------------------------------------------------------------- Fireworks Lab (Mission Bay): the eval lives in the world
+const labObj = new THREE.Group();
+{ const p = P(37.7705, -122.3915); labObj.position.copy(p); labObj.position.y = G;
+  labObj.add(mesh(new THREE.CylinderGeometry(3.2, 3.6, 3, 8), toon(0x2b2a33), new THREE.Vector3(0, 1.5, 0)));
+  const dome = mesh(new THREE.SphereGeometry(3, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), toon(0xff7a59, { emissive: 0xff5a1f, emissiveIntensity: .35 }), new THREE.Vector3(0, 3, 0));
+  labObj.add(dome);
+  const flask = mesh(new THREE.ConeGeometry(.9, 1.8, 16), toon(0x9be7ff, { transparent: true, opacity: .8 }), new THREE.Vector3(0, 6.6, 0)); labObj.add(flask);
+  flask.userData.spin = true;
+  label('🧪 Fireworks Lab · the eval', 'er', labObj, 8.4);
+  labObj.traverse(o => { if (o.isMesh) { o.userData = { ...o.userData, type: 'lab' }; pickables.push(o); } });
+  scene.add(labObj); }
+
+// ---------------------------------------------------------------- neighborhood islands
+const hoodTiles = {};
+for (const [name, h] of Object.entries(HOODS)) {
+  const g = new THREE.Group(); g.position.copy(P(h.lat, h.lon)); g.position.y = G;
+  g.add(mesh(new THREE.CylinderGeometry(5.5, 6, .6, 28), toon(h.color), new THREE.Vector3(0, .3, 0)));
+  label(name, 'hood', g, 1.8); scene.add(g); hoodTiles[name] = g;
+}
+
+// ---------------------------------------------------------------- fog puffs (clear as care steps get done)
+const fogPuffs = [];
+{ const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .55, depthWrite: false });
+  for (let i = 0; i < 55; i++) {
+    const g = new THREE.Group(); const lat = 37.71 + Math.random() * .1, lon = -122.51 + Math.random() * .13;
+    g.position.copy(P(lat, lon)); g.position.y = 18 + Math.random() * 8;
+    for (let j = 0; j < 4; j++) { const b = new THREE.Mesh(new THREE.SphereGeometry(1.5 + Math.random() * 1.5, 12, 8), mat);
+      b.position.set((Math.random() - .5) * 6, Math.random() * 1.5, (Math.random() - .5) * 4); g.add(b); }
+    g.userData.seed = Math.random() * 100; scene.add(g); fogPuffs.push(g);
+  }
+}
+
+// ---------------------------------------------------------------- OSM places: vets + dog parks
+let places = { vets: [], dog_parks: [], source: null };
+async function loadPlaces() {
+  places = await (await fetch('/map/places')).json();
+  for (const v of places.vets) {
+    const g = new THREE.Group(); g.position.copy(P(v.lat, v.lon)); g.position.y = G;
+    const col = v.emergency ? 0xe5322d : 0x3478f6;
+    g.add(mesh(new THREE.CylinderGeometry(.18, .18, 4), toon(0xffffff), new THREE.Vector3(0, 2, 0)));
+    const head = mesh(new THREE.SphereGeometry(.9, 16, 12), toon(col, { emissive: col, emissiveIntensity: .25 }), new THREE.Vector3(0, 4.4, 0));
+    g.add(head);
+    const cross = new THREE.Group(); cross.position.set(0, 4.4, .85);
+    cross.add(mesh(new THREE.BoxGeometry(.9, .28, .1), toon(0xffffff))); cross.add(mesh(new THREE.BoxGeometry(.28, .9, .1), toon(0xffffff)));
+    g.add(cross);
+    if (v.emergency) { const ring = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.9, 32), new THREE.MeshBasicMaterial({ color: col, transparent: true, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = .2; ring.userData.pulse = true; g.add(ring); label('24h ER · ' + v.name, 'er', g, 6.2); }
+    head.userData = { type: 'vet', v }; pickables.push(head);
+    g.userData.vet = v; scene.add(g);
+  }
+  for (const d of places.dog_parks) {
+    const g = new THREE.Group(); g.position.copy(P(d.lat, d.lon)); g.position.y = G;
+    const disc = mesh(new THREE.CylinderGeometry(1.4, 1.4, .25, 16), toon(0x7ed36f), new THREE.Vector3(0, .15, 0)); g.add(disc);
+    g.add(mesh(new THREE.CylinderGeometry(.08, .08, 1.6), toon(0x8b5a2b), new THREE.Vector3(.9, .8, 0)));
+    g.add(mesh(new THREE.BoxGeometry(.9, .55, .08), toon(0xfff1c9), new THREE.Vector3(.9, 1.6, 0)));
+    disc.userData = { type: 'park', d }; pickables.push(disc); scene.add(g);
+  }
+}
+
+// ---------------------------------------------------------------- pets + caregivers (dynamic)
+const dyn = new THREE.Group(); scene.add(dyn);
+const URG_COL = { emergency_now: 0xe5322d, vet_today: 0xff8a00, vet_this_week: 0xe6b800, monitor_at_home: 0x2fa84f };
+const PET_COLS = [0xff9f43, 0xc9a27a, 0x6b4f3a, 0xf5f5f5, 0x3a3a3a, 0xe8c07d];
+function makePet(p, i) {
+  const g = new THREE.Group(); const col = toon(PET_COLS[(p.id * 7 + i) % PET_COLS.length]); const dark = toon(0x2b2a33);
+  if (p.species === 'cat') {
+    const body = mesh(new THREE.SphereGeometry(.7, 16, 12), col, new THREE.Vector3(0, .7, 0)); body.scale.set(1, .85, 1.3); g.add(body);
+    g.add(mesh(new THREE.SphereGeometry(.5, 16, 12), col, new THREE.Vector3(0, 1.35, .7)));
+    for (const s of [-1, 1]) { const e = mesh(new THREE.ConeGeometry(.17, .38, 4), col, new THREE.Vector3(.25 * s, 1.85, .7)); g.add(e); }
+    const tail = mesh(new THREE.CylinderGeometry(.07, .09, 1.1), col, new THREE.Vector3(0, 1.1, -.95)); tail.rotation.x = -.5; g.add(tail);
+  } else {
+    g.add(mesh(new THREE.CapsuleGeometry(.55, 1, 6, 12), col, new THREE.Vector3(0, .85, 0)).rotateX(Math.PI / 2));
+    g.add(mesh(new THREE.SphereGeometry(.55, 16, 12), col, new THREE.Vector3(0, 1.45, .95)));
+    g.add(mesh(new THREE.SphereGeometry(.25, 12, 8), col, new THREE.Vector3(0, 1.3, 1.45)));
+    g.add(mesh(new THREE.SphereGeometry(.09, 8, 6), dark, new THREE.Vector3(0, 1.38, 1.7)));
+    for (const s of [-1, 1]) { const e = mesh(new THREE.SphereGeometry(.22, 10, 8), dark, new THREE.Vector3(.5 * s, 1.35, .85)); e.scale.set(.6, 1.4, .8); g.add(e); }
+    for (const [x, z] of [[-.3, .5], [.3, .5], [-.3, -.5], [.3, -.5]]) g.add(mesh(new THREE.CylinderGeometry(.12, .12, .6), col, new THREE.Vector3(x, .3, z)));
+  }
+  for (const s of [-1, 1]) g.add(mesh(new THREE.SphereGeometry(.07, 8, 6), dark, new THREE.Vector3(.18 * s, p.species === 'cat' ? 1.45 : 1.55, p.species === 'cat' ? 1.15 : 1.4)));
+  const urg = p.case?.urgency;
+  if (urg) { const ring = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.55, 32), new THREE.MeshBasicMaterial({ color: URG_COL[urg] || 0x999999, side: THREE.DoubleSide, transparent: true, opacity: .9 }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = .05; ring.userData.pulse = urg === 'emergency_now'; g.add(ring); }
+  g.traverse(o => { if (o.isMesh) { o.userData = { type: 'pet', p }; pickables.push(o); } });
+  return g;
+}
+
+let den = null, denId = null, viewAs = null, selPet = null, lastSig = '', emergency = null, routeLine = null;
+const petObjs = [];
+function denCenter() { const h = HOODS[den?.neighborhood] || HOODS.Mission; return P(h.lat, h.lon).setY(G + .6); }
+
+function rebuildDyn() {
+  for (let i = pickables.length - 1; i >= 0; i--) if (pickables[i].userData.type === 'pet') pickables.splice(i, 1);
+  dyn.traverse(o => { if (o.isCSS2DObject) o.element.remove(); });
+  dyn.clear(); petObjs.length = 0;
+  if (!den) return;
+  const c = denCenter();
+  // the Den house
+  const house = new THREE.Group(); house.position.copy(c).add(new THREE.Vector3(0, 0, -2.6));
+  house.add(mesh(new THREE.BoxGeometry(3, 2.2, 2.4), toon(0xfff1d6), new THREE.Vector3(0, 1.1, 0)));
+  const roof = mesh(new THREE.ConeGeometry(2.4, 1.6, 4), toon(0xff7a59), new THREE.Vector3(0, 3, 0)); roof.rotation.y = Math.PI / 4; house.add(roof);
+  house.add(mesh(new THREE.BoxGeometry(.7, 1.2, .1), toon(0x8b5a2b), new THREE.Vector3(0, .6, 1.22)));
+  label('🏠 ' + den.name, 'pet', house, 4.6); dyn.add(house);
+  // pets
+  den.pets.forEach((p, i) => {
+    const g = makePet(p, i); const a = (i / Math.max(1, den.pets.length)) * Math.PI * 2;
+    g.userData = { home: c.clone().add(new THREE.Vector3(Math.cos(a) * 4.2, 0, Math.sin(a) * 4.2 + 1)), phase: Math.random() * 6, p };
+    g.position.copy(g.userData.home);
+    const isolated = den.quests.some(q => q.pet_id === p.id && q.item === 'isolate_from_other_pets' && q.status === 'done');
+    if (isolated) { const bub = new THREE.Mesh(new THREE.SphereGeometry(1.9, 24, 16), new THREE.MeshToonMaterial({ color: 0xb48cff, transparent: true, opacity: .25 }));
+      bub.position.y = 1; g.add(bub); g.userData.home.add(new THREE.Vector3(0, 0, 3)); }
+    const open = den.quests.filter(q => q.pet_id === p.id && q.status === 'open').length;
+    label(`${p.species === 'cat' ? '🐱' : '🐶'} ${p.name}${open ? ` · ${open}❗` : ''}`, 'pet', g, 2.8);
+    if (p.case?.recheck_due) { const ms = new Date(p.case.recheck_due) - Date.now(); const late = ms < 0;
+      label(late ? '⏰ recheck overdue' : `⏰ recheck in ${fmtDur(ms)}`, 'timer' + (late ? ' late' : ''), g, 4); }
+    dyn.add(g); petObjs.push(g);
+  });
+  // caregivers
+  den.members.forEach((m, i) => {
+    const g = new THREE.Group(); g.position.copy(c).add(new THREE.Vector3(-3 + i * 1.6, 0, 4));
+    const col = toon([0x3478f6, 0xff5fa2, 0x2fa84f, 0x9b59b6][i % 4]);
+    g.add(mesh(new THREE.CapsuleGeometry(.35, .8, 4, 10), col, new THREE.Vector3(0, .8, 0)));
+    g.add(mesh(new THREE.SphereGeometry(.35, 12, 10), toon(0xffd7b5), new THREE.Vector3(0, 1.75, 0)));
+    label(m.emoji, 'member', g, 2.6); g.userData.bob = i; dyn.add(g);
+  });
+  drawRoute();
+}
+
+function nearestER(from) {
+  const ers = places.vets.filter(v => v.emergency);
+  const pool = ers.length ? ers : [];
+  return pool.map(v => ({ v, km: haversineKm(from, v) })).sort((a, b) => a.km - b.km)[0] || null;
+}
+function drawRoute() {
+  if (routeLine) { scene.remove(routeLine); routeLine = null; }
+  if (!emergency) return;
+  const h = HOODS[den.neighborhood] || HOODS.Mission, er = nearestER(h);
+  if (!er) return;
+  const a = P(h.lat, h.lon).setY(G + 1), b = P(er.v.lat, er.v.lon).setY(G + 1);
+  const mid = a.clone().lerp(b, .5).setY(G + 6 + a.distanceTo(b) * .25);
+  const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+  routeLine = new THREE.Mesh(new THREE.TubeGeometry(curve, 60, .35, 8), new THREE.MeshBasicMaterial({ color: 0xff3b30 }));
+  scene.add(routeLine);
+  flyTo(mid.clone().setY(G), 70);
+}
+
+// ---------------------------------------------------------------- UI
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nice = s => String(s || '').replaceAll('_', ' ');
+function fmtDur(ms) { const h = Math.abs(ms) / 36e5; return h >= 48 ? `${Math.round(h / 24)}d` : h >= 1 ? `${Math.round(h)}h` : `${Math.round(h * 60)}m`; }
+function toast(t, ms = 3500) { const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(el._t); el._t = setTimeout(() => el.style.display = 'none', ms); }
+async function api(path, opts = {}) { const r = await fetch(path, { headers: { 'content-type': 'application/json' }, ...opts });
+  if (!r.ok) throw new Error(await r.text()); return r.json(); }
+
+async function refresh(force = false) {
+  const dens = await api('/dens');
+  if (!dens.length) { den = null; renderPanel(); rebuildDyn(); return; }
+  if (!denId || !dens.find(d => d.id === denId)) denId = dens[0].id;
+  $('denPick').innerHTML = dens.map(d => `<option value="${d.id}" ${d.id === denId ? 'selected' : ''}>${esc(d.name)}</option>`).join('');
+  const d = await api(`/dens/${denId}` + (viewAs ? `?as_member=${viewAs}` : ''));
+  const sig = JSON.stringify(d);
+  if (!force && sig === lastSig) return;
+  lastSig = sig; den = d; emergency = d.emergency;
+  if (!viewAs || !d.members.find(m => m.id === viewAs)) { viewAs = d.members[0]?.id; }
+  $('viewAs').innerHTML = d.members.map(m => `<option value="${m.id}" ${m.id === viewAs ? 'selected' : ''}>${m.emoji} ${esc(m.name)} (${m.role})</option>`).join('');
+  $('denName').textContent = '· ' + d.name + ' · ' + d.neighborhood;
+  renderPanel(); rebuildDyn(); renderEmergency(); updateFog();
+}
+
+function updateFog() {
+  const care = (den?.quests || []).filter(q => q.kind !== 'watch');
+  const done = care.filter(q => q.status === 'done').length, tot = care.length;
+  const clear = tot ? done / tot : 0;
+  $('fogPct').textContent = tot ? `${Math.round(clear * 100)}% of care steps done · fog clearing` : 'no care steps yet';
+  const dc = denCenter(); fogPuffs.forEach((f, i) => f.userData.target = ((i / fogPuffs.length) < clear || Math.hypot(f.position.x - dc.x, f.position.z - dc.z) < 28) ? 0 : 1);
+}
+
+function renderPanel() {
+  const el = $('panel');
+  if (!den) { el.innerHTML = `<h2>No Den yet</h2><p class="muted">A Den is a household: several caregivers sharing several pets.
+    Press <b>Seed demo Den</b> to create one with 3 caregivers, 3 pets, a scheduled med and one real photo triage (≈$0.001).</p>`; return; }
+  const H = den.helper_view, me = den.viewer;
+  const mem = den.members, opts = id => `<option value="">unassigned</option>` + mem.map(m => `<option value="${m.id}" ${m.id === id ? 'selected' : ''}>${m.emoji} ${esc(m.name)}</option>`).join('');
+  const pets = den.pets.map(p => `<div class="petcard ${selPet === p.id ? 'sel' : ''}" data-pet="${p.id}">
+      <b>${p.species === 'cat' ? '🐱' : '🐶'} ${esc(p.name)}</b> <span class="muted">${esc(p.breed || '')} · ${p.age_years ?? '?'}y</span>
+      <span class="pill u-${p.case?.urgency || 'none'}" style="float:right">${p.case ? nice(p.case.urgency) : 'no open case'}</span>
+      ${p.case && !H ? `<div class="muted">${p.case.conditions.length ? 'possible ' + p.case.conditions.slice(0, 2).map(nice).join(', ') + ' (not a diagnosis)' : ''}${p.case.image_finding ? ' · photo: ' + nice(p.case.image_finding) : ''}</div>` : ''}
+      ${p.case?.red_flags?.length ? `<div class="muted">⚑ ${p.case.red_flags.map(esc).join('; ')}</div>` : ''}
+      ${p.meds.length ? `<div class="muted">💊 ${p.meds.map(esc).join(', ')}</div>` : ''}
+      ${p.adherence && p.adherence.score != null ? `<div class="muted">📋 Care adherence: <b>${p.adherence.score}%</b> (${p.adherence.on_time}/${p.adherence.due} steps on time; shown in the vet packet)</div>` : ''}
+      ${p.case?.cost_usd != null ? `<div style="margin-top:4px"><span class="fwchip">⚡ Fireworks · ${p.case.mode === 'sft' ? 'LoRA' : p.case.mode === 'rubric' ? 'GLM 5.3 Flash + rubric' : 'GLM 5.3 Flash'} · <b>$${p.case.cost_usd.toFixed(4)}</b> · <b>${(p.case.latency_ms / 1000).toFixed(1)}s</b></span></div>` : ''}
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+        ${p.case ? `<a href="/cases/${p.case.id}/handoff?format=pdf" target="_blank"><button class="small ghost">Vet packet PDF</button></a>` : ''}
+        <a href="/?pet=${p.id}"><button class="small ghost">Triage ${esc(p.name)}</button></a>
+      </div></div>`).join('');
+  const qs = den.quests.slice().sort((a, b) => (a.status > b.status) - (a.status < b.status) || (a.pet_id === selPet ? -1 : 0));
+  const petName = id => den.pets.find(p => p.id === id)?.name || '';
+  const quests = qs.map(q => `<div class="quest ${q.status}">
+      <div class="t"><span class="kind k-${q.kind}">${q.kind}</span> ${esc(q.title)}
+        <div class="meta">${petName(q.pet_id)}${q.due_at ? ' · due ' + (new Date(q.due_at) < new Date() ? 'now' : 'in ' + fmtDur(new Date(q.due_at) - Date.now())) : ''}
+          ${q.every_hours ? ` · every ${q.every_hours}h` : ''} · +${q.points}
+          ${q.status === 'done' ? ` · ✔ ${q.done_by ? esc(q.done_by.emoji + ' ' + q.done_by.name) : ''}` : ''}</div></div>
+      ${q.status === 'open' ? `${H ? '' : `<select data-assign="${q.id}" style="max-width:110px">${opts(q.assignee_id)}</select>`}
+        <button class="small" data-done="${q.id}" ${emergency && q.kind !== 'immediate' ? 'disabled title="Paused during an emergency"' : ''}>Done</button>` : ''}
+    </div>`).join('') || '<p class="muted">No quests.</p>';
+  const board = H ? '' : `<h2>Care points ${emergency ? '<span class="muted">(frozen during emergency)</span>' : ''}</h2>
+      <div class="board">${mem.slice().sort((a, b) => b.points - a.points).map(m => `<div class="chip">${m.emoji} ${esc(m.name)} <small>${m.role}</small> · ${m.points}</div>`).join('')}</div>
+      <p class="muted">Points come only from care actions (doses, checks, rechecks, vet visits). Nothing is earned by waiting it out.</p>
+      <div>${den.badges.map(b => `<span class="badge" title="${esc(b.why)}">${b.icon} ${esc(b.name)}</span>`).join('') || '<span class="muted">No badges yet.</span>'}</div>`;
+  const events = den.events.map(e => `<div class="ev ${e.kind}"><time>${new Date(e.at).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</time>${esc(e.text)}</div>`).join('');
+  el.innerHTML = `
+    ${H ? `<p class="muted" style="background:#fff7e0;padding:8px;border-radius:10px">Helper view (${esc(me?.name)}): today's tasks only. Diagnoses and photos are hidden from helpers.</p>` : ''}
+    <div id="walker"></div>
+    <h2>Pets in the Den</h2>${pets}
+    <h2>Quests <span class="muted">(from the triage care plans)</span></h2>${quests}
+    ${H ? '' : `<button class="small ghost" id="btnMed">+ schedule a med</button>`}
+    ${board}
+    <h2>Shift handoff note</h2>
+    <div style="display:flex;gap:6px"><select id="notePet">${den.pets.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
+      <input id="noteText" placeholder="e.g. Miso ate half breakfast, scratched once" style="flex:1"><button class="small" id="btnNote">Log</button></div>
+    <p class="muted">Notes go into the pet's vet packet under "Caregiver log".</p>
+    <h2>Den log</h2>${events}
+    <h2>Neighborhood health weather</h2><div id="weather" class="muted">loading…</div>`;
+  el.querySelectorAll('[data-pet]').forEach(c => c.onclick = e => { if (e.target.closest('a')) return; selectPet(+c.dataset.pet); });
+  el.querySelectorAll('[data-done]').forEach(b => b.onclick = () => doneQuest(+b.dataset.done));
+  el.querySelectorAll('[data-assign]').forEach(s => s.onchange = async () => { await api(`/quests/${s.dataset.assign}/assign`, { method: 'POST', body: JSON.stringify({ member_id: s.value ? +s.value : null }) }); refresh(); });
+  $('btnNote').onclick = async () => { const t = $('noteText').value.trim(); if (!t) return;
+    await api(`/dens/${den.id}/notes`, { method: 'POST', body: JSON.stringify({ member_id: viewAs, pet_id: +$('notePet').value, text: t }) }); toast('Logged to the Den and the vet packet'); refresh(); };
+  if ($('btnMed')) $('btnMed').onclick = async () => {
+    const pet = den.pets.find(p => p.id === selPet) || den.pets[0]; const name = prompt(`Medication for ${pet.name} (as prescribed by your vet):`); if (!name) return;
+    const every = +prompt('Every how many hours?', '12') || 24;
+    await api(`/dens/${den.id}/meds`, { method: 'POST', body: JSON.stringify({ pet_id: pet.id, name, every_hours: every }) }); refresh(); };
+  loadWeather(); renderWalker();
+}
+
+async function loadWeather() {
+  const w = await api('/community/weather'); const el = $('weather'); if (!el) return;
+  el.innerHTML = w.signals.length ? w.signals.map(s => `<div>${s.shown ? '🌧️' : '🔒'} <b>${esc(s.neighborhood)}</b>: ${esc(s.note)}</div>`).join('')
+    + `<p>Counts are anonymous and hidden below ${w.min_reports} reports, so no single household can be identified.</p>` : 'No contagious reports this week.';
+}
+
+async function doneQuest(id) {
+  const r = await api(`/quests/${id}/done`, { method: 'POST', body: JSON.stringify({ member_id: viewAs }) });
+  if (r.double_dose) {
+    toast(`🛑 Stopped: ${r.given_by} already gave this dose ${r.minutes_ago} min ago. Don't give it again; call your vet if unsure.`, 7000);
+  } else if (r.ok && !r.already) toast(`+${r.points} care points`);
+  refresh();
+}
+
+function selectPet(id) { selPet = id; renderPanel(); const o = petObjs.find(g => g.userData.p.id === id); if (o) flyTo(o.position, 22); }
+
+function renderEmergency() {
+  const card = $('emergCard'), ring = $('emerg');
+  if (!emergency) { card.style.display = ring.style.display = 'none'; return; }
+  const h = HOODS[den.neighborhood] || HOODS.Mission, er = nearestER(h);
+  card.style.display = 'block'; ring.style.display = 'block';
+  card.innerHTML = `<h1>🚨 ${esc(emergency.pet)}: go to an emergency vet now</h1>
+    ${emergency.red_flags.length ? `<div>⚑ ${emergency.red_flags.map(esc).join('; ')}</div>` : ''}
+    ${er ? `<p>Nearest 24h ER on the map: <b>${esc(er.v.name)}</b>, about ${er.km.toFixed(1)} km straight-line${er.v.addr ? ', ' + esc(er.v.addr) : ''}.
+       ${er.v.phone ? `Call ahead: <a href="tel:${esc(er.v.phone)}">${esc(er.v.phone)}</a>.` : ''}
+       <a href="https://www.google.com/maps/dir/?api=1&destination=${er.v.lat},${er.v.lon}" target="_blank">Directions ↗</a></p>`
+       : `<p>No 24h vet is tagged in the OpenStreetMap data, so none is shown. Search "emergency vet near me".</p>`}
+    <p>If a toxin is involved, the ASPCA Animal Poison Control line is <a href="tel:+18884264435">(888) 426-4435</a> (a fee may apply).</p>
+    <p style="opacity:.85">The game is paused: streaks and quests are frozen. Only getting to care counts now.</p>
+    <button id="btnOnWay">We're on our way</button>`;
+  $('btnOnWay').onclick = async () => { await fetch(`/cases/${emergency.case_id}/at_vet?member_id=${viewAs}`, { method: 'POST' }); toast('Logged. The vet packet has the full timeline. Go safely.'); refresh(true); };
+}
+
+async function openLab() {
+  const m = await api('/metrics'); const el = $('lab'); el.style.display = 'block';
+  const S = m.summary || {}; const pct = x => x == null ? '–' : (100 * x).toFixed(1) + '%';
+  const NAMES = { base: 'Base GLM 5.3 Flash', harness_rubric: 'Base + rubric prompt', sft: 'Fine-tuned LoRA', sft_safety: 'LoRA + safety rules' };
+  const rows = Object.keys(NAMES).filter(k => S[k]).map(k => { const x = S[k].metrics, c = S[k].vs_base?.all?.urgency_correct;
+    return `<tr><td><b>${NAMES[k]}</b></td><td>${pct(x.all?.urgency_correct)}</td><td>${pct(x.image?.urgency_correct)}</td><td>${pct(x.text?.urgency_correct)}</td>
+      <td>${pct(x.all?.under_triage ?? x.text?.under_triage)}</td><td>${c?.mcnemar?.p_exact != null ? Number(c.mcnemar.p_exact).toExponential(1) : '–'}</td><td>${c?.bootstrap ? `[${(100*c.bootstrap.ci_low).toFixed(1)}, ${(100*c.bootstrap.ci_high).toFixed(1)}] pp` : '–'}</td></tr>`; }).join('');
+  el.innerHTML = `<button style="float:right" id="labClose">Close ✕</button>
+    <h2 style="font-size:20px">🧪 Fireworks Lab: does the fine-tune actually help?</h2>
+    <p class="muted">Locked test set of 712 rows (400 text, 312 photos), split by scenario so no test scenario was trained on. Urgency accuracy vs gold labels.
+      LoRA trained on Fireworks serverless training (rank 16, 1 epoch). Significance: McNemar exact test + 5,000-rep scenario-cluster bootstrap.</p>
+    <table><tr><th>System</th><th>All</th><th>Photos</th><th>Text</th><th>Under-triage</th><th>p vs base</th><th>95% CI of gain</th></tr>${rows}</table>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px">
+      <img src="/charts/bootstrap.png" alt="bootstrap CIs"><img src="/charts/mcnemar.png" alt="McNemar"></div>
+    <p class="muted">Honest read: the LoRA wins big on photos; the rubric-prompted base still beats it on text (its rubric overlaps the test scenarios).
+      The live app currently serves base + rubric (≈$0.001/triage) because the LoRA needs a 4×B300 deployment (~$60/h).</p>
+    <p><a href="/#replay"><button class="ghost">🎞️ See the LoRA's recorded answers</button></a>
+       <a href="/#compare"><button class="ghost">⚔️ Base vs tuned, live</button></a></p>`;
+  $('labClose').onclick = () => el.style.display = 'none';
+}
+
+async function renderWalker() {
+  const box = $('walker'); if (!box || !den?.viewer || den.viewer.role !== 'helper') return;
+  try { const w = await api('/walker/' + encodeURIComponent(den.viewer.name));
+    box.innerHTML = `<h2>🦮 ${esc(w.walker)}'s route today: ${w.dens} Dens · ${w.tasks} tasks</h2>` + w.stops.map(st => `
+      <div class="petcard"><b>${st.emergency ? '🚨 ' : ''}${esc(st.den)}</b> <span class="muted">${esc(st.neighborhood)}</span>
+      ${st.tasks.map(t => `<div class="muted">• ${esc(t.pet)}: ${esc(t.title)}${t.mine ? ' <b>(yours)</b>' : ''}${t.due_at ? ' · due ' + (new Date(t.due_at) < new Date() ? 'now' : 'in ' + fmtDur(new Date(t.due_at) - Date.now())) : ''}</div>`).join('') || '<div class="muted">nothing due</div>'}</div>`).join('');
+  } catch (e) { box.innerHTML = ''; }
+}
+
+// demo buttons
+$('btnSeed').onclick = async () => { $('btnSeed').disabled = true; toast('Creating Den and running one real photo triage…', 9000);
+  try { const r = await api('/demo/seed_den', { method: 'POST' }); denId = r.den_id; viewAs = null; await refresh(true); toast('Den ready: ringworm found in Miso, so every pet got a quest'); }
+  catch (e) { toast('Seed failed: ' + e.message); } $('btnSeed').disabled = false; };
+$('btnTime').onclick = async () => { await api('/demo/advance_time?hours=24', { method: 'POST' }); toast('Demo clock +24h'); refresh(true); };
+$('btnEmerg').onclick = async () => {
+  if (!den) return toast('Seed a Den first');
+  const pep = den.pets.find(p => p.name === 'Pepper') || den.pets.find(p => p.species === 'dog'); if (!pep) return;
+  $('btnEmerg').disabled = true; toast(`Real triage call for ${pep.name}…`, 9000);
+  const fd = new FormData(); fd.append('pet_id', pep.id); fd.append('message', `${pep.name} got into the pantry and ate most of a dark chocolate bar about 30 minutes ago. He's panting and restless.`);
+  try { await fetch('/triage', { method: 'POST', body: fd }); await refresh(true); } catch (e) { toast('Triage failed: ' + e.message); }
+  $('btnEmerg').disabled = false; };
+$('denPick').onchange = () => { denId = +$('denPick').value; viewAs = null; refresh(true).then(() => flyTo(denCenter(), 45)); };
+$('btnWalker').onclick = async () => { const r = await api('/demo/seed_walker', { method: 'POST' }); toast("Added The Noe Valley Den. View the first Den as Jordan to see the walker's route across both."); refresh(true); };
+$('viewAs').onchange = () => { viewAs = +$('viewAs').value; refresh(true); };
+$('btnPanel').onclick = () => $('panel').classList.toggle('collapsed');
+
+// ---------------------------------------------------------------- picking + camera
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+renderer.domElement.addEventListener('click', e => {
+  mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObjects(pickables, false)[0]; const pop = $('popup');
+  if (!hit) { pop.style.display = 'none'; return; }
+  const u = hit.object.userData;
+  if (u.type === 'pet') { selectPet(u.p.id); pop.style.display = 'none'; return; }
+  if (u.type === 'lab') { pop.style.display = 'none'; openLab(); return; }
+  let html = '';
+  if (u.type === 'vet') { const v = u.v;
+    html = `<b>${esc(v.name)}</b>${v.emergency ? ' <span class="pill u-emergency_now">24h / emergency</span>' : ''}<br>
+      ${v.addr ? esc(v.addr) + '<br>' : ''}${v.opening_hours ? '🕒 ' + esc(v.opening_hours) + '<br>' : ''}${v.phone ? '📞 ' + esc(v.phone) + '<br>' : ''}
+      <span class="muted">OSM ${esc(v.osm)}: hours may be out of date, call ahead.</span>`; }
+  if (u.type === 'park') html = `<b>🐕 ${esc(u.d.name)}</b><br><span class="muted">Dog park (OSM ${esc(u.d.osm)}). If a Den pet is contagious, skip the park until the vet clears them.</span>`;
+  pop.innerHTML = html; pop.style.display = 'block'; pop.style.left = Math.min(e.clientX + 12, innerWidth - 270) + 'px'; pop.style.top = (e.clientY + 12) + 'px';
+});
+let fly = null;
+function flyTo(target, dist = 40) {
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  fly = { t: 0, fromT: controls.target.clone(), toT: target.clone(), fromP: camera.position.clone(), toP: target.clone().add(dir.multiplyScalar(dist)).setY(target.y + dist * .7) };
+}
+
+// ---------------------------------------------------------------- loop
+const clock = new THREE.Clock();
+function tick() {
+  const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+  if (fly) { fly.t = Math.min(1, fly.t + dt * .9); const k = 1 - (1 - fly.t) ** 3;
+    controls.target.lerpVectors(fly.fromT, fly.toT, k); camera.position.lerpVectors(fly.fromP, fly.toP, k); if (fly.t >= 1) fly = null; }
+  for (const g of petObjs) { const u = g.userData, ph = t * .6 + u.phase;
+    const sick = u.p.case && u.p.case.urgency !== 'monitor_at_home';
+    const r = sick ? .3 : 1.2;  // sick pets rest near home, healthy ones roam
+    g.position.x = u.home.x + Math.cos(ph) * r; g.position.z = u.home.z + Math.sin(ph) * r;
+    g.position.y = u.home.y + Math.abs(Math.sin(t * (sick ? 2 : 6) + u.phase)) * (sick ? .05 : .25);
+    g.rotation.y = -ph + (sick ? 0 : Math.PI); }
+  scene.traverse(o => { if (o.userData?.pulse) { const s = 1 + (Math.sin(t * 4) * .5 + .5) * .6; o.scale.set(s, s, s); o.material.opacity = 1.2 - s * .5; }
+    if (o.userData?.spin) o.rotation.y = t * 1.5;
+    if (o.userData?.bob !== undefined) o.position.y = G + .6 + Math.abs(Math.sin(t * 3 + o.userData.bob)) * .15; });
+  for (const f of fogPuffs) { const tgt = (f.userData.target ?? 1) * 1; const cur = f.scale.x; const nx = cur + (Math.max(tgt, .001) - cur) * dt * 1.5;
+    f.scale.setScalar(nx); f.visible = nx > .02; f.position.x += Math.sin(t * .1 + f.userData.seed) * .01; }
+  scene.background.lerp(emergency ? SKY_RED : SKY, dt * 2);
+  controls.update(); renderer.render(scene, camera); labelR.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); labelR.setSize(innerWidth, innerHeight); });
+
+api('/pawtown/config').then(c => { if (c.scanner_url) { $('scanLink').href = c.scanner_url; $('scanLink').style.display = ''; } }).catch(() => {});
+await loadPlaces();
+await refresh(true);
+if (den) flyTo(denCenter(), 45);
+setInterval(() => refresh().catch(() => {}), 5000);
+if (location.hash === '#lab') openLab();
+tick();
+</script>
+</body>
+</html>

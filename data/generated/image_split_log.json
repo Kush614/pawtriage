@@ -1,0 +1,42 @@
+{
+ "dog_bacterial_dermatosis": {
+  "images": 70,
+  "dup_groups": 69,
+  "test_images": 13
+ },
+ "dog_fungal_infection": {
+  "images": 60,
+  "dup_groups": 57,
+  "test_images": 13
+ },
+ "dog_healthy_skin": {
+  "images": 54,
+  "dup_groups": 53,
+  "test_images": 13
+ },
+ "dog_allergic_dermatosis": {
+  "images": 80,
+  "dup_groups": 77,
+  "test_images": 13
+ },
+ "cat_flea_allergy": {
+  "images": 250,
+  "dup_groups": 166,
+  "test_images": 13
+ },
+ "cat_healthy_skin": {
+  "images": 250,
+  "dup_groups": 243,
+  "test_images": 13
+ },
+ "cat_ringworm": {
+  "images": 250,
+  "dup_groups": 186,
+  "test_images": 13
+ },
+ "cat_scabies_mange": {
+  "images": 250,
+  "dup_groups": 175,
+  "test_images": 13
+ }
+}

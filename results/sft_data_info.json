@@ -1,0 +1,9 @@
+{
+ "n_rows": 2639,
+ "n_text": 1479,
+ "n_image_unique": 1160,
+ "image_upsample": 1,
+ "image_frac": 0.44,
+ "prompt_hash": "1496329eb49a3a76",
+ "path": "/Users/kush/pawtriage/data/splits/sft_train.jsonl"
+}

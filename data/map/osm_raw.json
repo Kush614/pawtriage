@@ -1,0 +1,1016 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.4 2390de5a",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-02T22:09:28Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1229112075,
+  "lat": 37.7361936,
+  "lon": -122.4848346,
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "node",
+  "id": 3523031625,
+  "lat": 37.7434801,
+  "lon": -122.4396299,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "5264",
+    "addr:postcode": "94131",
+    "addr:state": "CA",
+    "addr:street": "Diamond Heights Boulevard",
+    "amenity": "veterinary",
+    "name": "Seven Hills Veterinary Hospital",
+    "phone": "+1-415-642-7200",
+    "website": "https://www.sevenhillsvet.com/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3540255700,
+  "lat": 37.7369309,
+  "lon": -122.4700042,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:country": "US",
+    "addr:housenumber": "373",
+    "addr:postcode": "94127",
+    "addr:state": "CA",
+    "addr:street": "West Portal Avenue",
+    "amenity": "veterinary",
+    "name": "Healthy Pets",
+    "opening_hours": "Mo-Fr 08:30-11:30,13:30-17:00; Tu,Th 08:30-12:30,13:30-17:00; Sa 09:30-16:00",
+    "website": "https://www.sfhealthypets.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 3658310643,
+  "lat": 37.7633456,
+  "lon": -122.4664139,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1333",
+    "addr:postcode": "94122",
+    "addr:state": "CA",
+    "addr:street": "9th Avenue",
+    "amenity": "veterinary",
+    "check_date": "2026-05-21",
+    "level": "0",
+    "name": "Omega",
+    "note": "veterinary dentistry",
+    "opening_hours": "Mo-Th 07:30-17:00; Fr-Su off",
+    "phone": "+1-415-527-3933",
+    "source": "survey",
+    "website": "https://omegavetsf.com",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3688683726,
+  "lat": 37.7656793,
+  "lon": -122.4665873,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:country": "US",
+    "addr:housenumber": "1207",
+    "addr:postcode": "94122",
+    "addr:state": "CA",
+    "addr:street": "9th Avenue",
+    "amenity": "veterinary",
+    "check_date": "2022-06-04",
+    "level": "0",
+    "name": "Park Animal Hospital",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "phone": "+1 415-980-7393",
+    "website": "https://parkanimalvetsf.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 3781718563,
+  "lat": 37.7427552,
+  "lon": -122.4795574,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1235",
+    "addr:postcode": "94116",
+    "addr:state": "CA",
+    "addr:street": "Taraval Street",
+    "amenity": "veterinary",
+    "name": "Veterinary Vision"
+  }
+},
+{
+  "type": "node",
+  "id": 3796324453,
+  "lat": 37.7517663,
+  "lon": -122.4279960,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "3818",
+    "addr:street": "24th Street",
+    "amenity": "veterinary",
+    "name": "Noe Animal Hospital",
+    "phone": "+1 415-727-9101",
+    "website": "https://www.noeanimalhospital.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 3808454919,
+  "lat": 37.7908263,
+  "lon": -122.4198021,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1540",
+    "addr:postcode": "94109",
+    "addr:street": "California Street",
+    "amenity": "veterinary",
+    "check_date": "2025-06-24",
+    "name": "Nob Hill Cat Clinic",
+    "opening_hours": "Mo 09:00-18:00; Tu-Fr 08:30-18:00; Sa 09:00-15:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "website": "https://nobhillcatclinic.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 3940894710,
+  "lat": 37.7672325,
+  "lon": -122.4124314,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "201",
+    "addr:postcode": "94103",
+    "addr:state": "CA",
+    "addr:street": "Alabama Street",
+    "amenity": "veterinary",
+    "check_date": "2025-06-16",
+    "email": "hospital@sfspca.org",
+    "name": "San Francisco SPCA Veterinary Hospital - Mission Campus",
+    "opening_hours": "Mo-Sa 08:00-18:00; Su off",
+    "phone": "+1 415-554-3030"
+  }
+},
+{
+  "type": "node",
+  "id": 4071080792,
+  "lat": 37.7638668,
+  "lon": -122.4733202,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1428",
+    "addr:postcode": "94122",
+    "addr:state": "CA",
+    "addr:street": "Irving Street",
+    "amenity": "veterinary"
+  }
+},
+{
+  "type": "node",
+  "id": 4214359690,
+  "lat": 37.7528858,
+  "lon": -122.5039640,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "3741",
+    "addr:state": "CA",
+    "addr:street": "Noriega Street",
+    "amenity": "veterinary",
+    "check_date": "2024-11-30",
+    "check_date:opening_hours": "2024-11-30",
+    "name": "Sunset Veterinary Hospital",
+    "opening_hours": "Mo-Fr 08:00-18:00; Sa 09:00-16:00"
+  }
+},
+{
+  "type": "node",
+  "id": 4564813980,
+  "lat": 37.7995453,
+  "lon": -122.4396343,
+  "tags": {
+    "amenity": "veterinary",
+    "name": "Urban Pet Hospital",
+    "website": "https://www.sfurbanpethospital.com/index.html"
+  }
+},
+{
+  "type": "node",
+  "id": 4852550734,
+  "lat": 37.7766196,
+  "lon": -122.4393013,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1371",
+    "addr:postcode": "94117",
+    "addr:street": "Fulton Street",
+    "amenity": "veterinary",
+    "check_date": "2025-08-19",
+    "level": "0",
+    "name": "San Francisco Pet Hospital",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 9696861037,
+  "lat": 37.7938531,
+  "lon": -122.4212269,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:state": "CA",
+    "addr:street": "Polk Street",
+    "amenity": "veterinary",
+    "name": "Polk Street Animal Hospital"
+  }
+},
+{
+  "type": "node",
+  "id": 9951891978,
+  "lat": 37.7112751,
+  "lon": -122.4464210,
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "5601",
+    "addr:postcode": "94112",
+    "addr:state": "CA",
+    "addr:street": "Mission Street",
+    "amenity": "veterinary",
+    "email": "afphreception@gmail.com",
+    "facebook": "https://www.facebook.com/animalfarmpethospital/",
+    "instagram": "https://www.instagram.com/animalfarm_ph/",
+    "name": "Animal Farm Pet Hospital",
+    "opening_hours": "Mo-Fr 08:00-20:00; Sa 09:00-19:00; Su 09:00-18:00",
+    "phone": "+1 415 333 0813",
+    "website": "https://animalfarmpethospital.com"
+  }
+},
+{
+  "type": "node",
+  "id": 9953617994,
+  "lat": 37.7732470,
+  "lon": -122.4376452,
+  "tags": {
+    "addr:housenumber": "401",
+    "addr:street": "Divisadero Street",
+    "amenity": "veterinary",
+    "check_date": "2026-06-09",
+    "name": "Modern Animal"
+  }
+},
+{
+  "type": "node",
+  "id": 10607121851,
+  "lat": 37.7690996,
+  "lon": -122.4292904,
+  "tags": {
+    "amenity": "veterinary",
+    "check_date": "2025-06-28",
+    "name": "The Castro Animal Hospital"
+  }
+},
+{
+  "type": "node",
+  "id": 10635344677,
+  "lat": 37.7614721,
+  "lon": -122.4121895,
+  "tags": {
+    "addr:housenumber": "600",
+    "addr:street": "Alabama Street",
+    "amenity": "veterinary",
+    "check_date": "2025-11-20",
+    "description": "Emergency veterinary care",
+    "email": "sanfrancisco@sagecenters.com",
+    "name": "Sage veterinary center",
+    "opening_hours": "24/7",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "phone": "+1 415-566-0540",
+    "website": "https://sagecenters.com",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 10806697941,
+  "lat": 37.7740932,
+  "lon": -122.3917413,
+  "tags": {
+    "addr:housenumber": "1110",
+    "addr:street": "4th Street",
+    "amenity": "veterinary",
+    "check_date": "2026-08-05",
+    "check_date:opening_hours": "2026-08-05",
+    "name": "SOMA Animal Hospital",
+    "opening_hours": "Mo-Fr 07:00-19:00; Sa 08:00-12:30, 13:30-16:00",
+    "phone": "+1-415-727-9116",
+    "website": "https://www.somaanimalhospital.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 10869899313,
+  "lat": 37.7819839,
+  "lon": -122.3925388,
+  "tags": {
+    "amenity": "veterinary",
+    "check_date": "2023-05-04",
+    "level": "0",
+    "name": "South Park Animal Hospital",
+    "opening_hours": "Tu-Fr 08:00-19:00; Sa 08:00-16:00",
+    "phone": "+1 415-523-4404"
+  }
+},
+{
+  "type": "node",
+  "id": 11021366853,
+  "lat": 37.7872677,
+  "lon": -122.3917161,
+  "tags": {
+    "access": "private",
+    "leisure": "dog_park",
+    "operator:type": "private"
+  }
+},
+{
+  "type": "node",
+  "id": 11523359210,
+  "lat": 37.7912957,
+  "lon": -122.4346366,
+  "tags": {
+    "addr:housenumber": "2343",
+    "addr:street": "Fillmore Street",
+    "amenity": "veterinary",
+    "check_date": "2026-03-11",
+    "level": "0",
+    "name": "San Francisco Animal Medical Center",
+    "opening_hours": "24/7",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+1 415-872-1872",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12525217981,
+  "lat": 37.7613075,
+  "lon": -122.4216996,
+  "tags": {
+    "addr:housenumber": "720",
+    "addr:street": "Valencia Street",
+    "amenity": "veterinary",
+    "check_date": "2026-04-14",
+    "level": "0",
+    "name": "Mission Pet Hospital",
+    "opening_hours": "Mo-Fr 07:00-19:00; Sa 08:00-18:00; Su off",
+    "phone": "+1 415-552-1969"
+  }
+},
+{
+  "type": "node",
+  "id": 13567393701,
+  "lat": 37.7194526,
+  "lon": -122.4187836,
+  "tags": {
+    "leisure": "dog_park",
+    "name": "McLaren Park Dog Play Area"
+  }
+},
+{
+  "type": "way",
+  "id": 38025784,
+  "center": {
+    "lat": 37.7655424,
+    "lon": -122.4398144
+  },
+  "tags": {
+    "barrier": "fence",
+    "leisure": "dog_park",
+    "name": "Corona Heights Dog Play Area",
+    "surface": "woodchips",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/Corona-Heights-Dog-Play-Area-5"
+  }
+},
+{
+  "type": "way",
+  "id": 56645382,
+  "center": {
+    "lat": 37.7706860,
+    "lon": -122.3991458
+  },
+  "tags": {
+    "access": "yes",
+    "alt_name": "Berry Street Dog Park",
+    "barrier": "fence",
+    "leisure": "dog_park",
+    "lit": "yes",
+    "name": "Mission Bay Dog Park",
+    "opening_hours": "06:00-22:00",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/Berry-Street-Dog-Park-452",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 128534082,
+  "center": {
+    "lat": 37.7805666,
+    "lon": -122.4136770
+  },
+  "tags": {
+    "barrier": "fence",
+    "leisure": "dog_park",
+    "url": "https://sfciviccenter.org/un-plaza-dog-park/"
+  }
+},
+{
+  "type": "way",
+  "id": 173104353,
+  "center": {
+    "lat": 37.7426415,
+    "lon": -122.4806919
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:country": "US",
+    "addr:housenumber": "1339",
+    "addr:postcode": "94116",
+    "addr:state": "CA",
+    "addr:street": "Taraval Street",
+    "amenity": "veterinary",
+    "building": "yes",
+    "height": "6",
+    "name": "Especially Cats Veterinary Hospital",
+    "opening_hours": "Mo-Fr 08:00-17:00; Sa-Su off",
+    "source": "data.sfgov.org",
+    "website": "https://especiallycats.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 174826283,
+  "center": {
+    "lat": 37.7859383,
+    "lon": -122.3904146
+  },
+  "tags": {
+    "addr:housenumber": "486",
+    "contact:website": "https://www.rinconhilldogpark.org/",
+    "leisure": "dog_park",
+    "name": "Rincon Hill Dog Park",
+    "source": "Survey"
+  }
+},
+{
+  "type": "way",
+  "id": 249654585,
+  "center": {
+    "lat": 37.7597544,
+    "lon": -122.4364863
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 251442759,
+  "center": {
+    "lat": 37.7696327,
+    "lon": -122.4323510
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Dog Play Area",
+    "surface": "grass",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 260053217,
+  "center": {
+    "lat": 37.7806368,
+    "lon": -122.4584651
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "530",
+    "addr:postcode": "94118",
+    "addr:state": "CA",
+    "addr:street": "Arguello Boulevard",
+    "amenity": "veterinary",
+    "building": "yes",
+    "name": "Arguello Pet Hospital",
+    "website": "https://www.arguellopet.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 264552589,
+  "center": {
+    "lat": 37.7403686,
+    "lon": -122.3759672
+  },
+  "tags": {
+    "barrier": "fence",
+    "leisure": "dog_park",
+    "surface": "compacted"
+  }
+},
+{
+  "type": "way",
+  "id": 267692311,
+  "center": {
+    "lat": 37.7639820,
+    "lon": -122.4734320
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1434",
+    "addr:postcode": "94122",
+    "addr:state": "CA",
+    "addr:street": "Irving Street",
+    "amenity": "veterinary",
+    "building": "yes",
+    "check_date": "2025-08-26",
+    "height": "5",
+    "name": "Irving Pet Hospital",
+    "phone": "+1 415-664-0191",
+    "website": "https://irvingpethospital.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 282189753,
+  "center": {
+    "lat": 37.7230414,
+    "lon": -122.4533026
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "1001",
+    "addr:postcode": "94112",
+    "addr:state": "CA",
+    "addr:street": "Ocean Avenue",
+    "amenity": "veterinary",
+    "building": "yes",
+    "contact:facebook": "oceanavevethospital",
+    "fax": "+1 415 5865332",
+    "height": "7",
+    "name": "Ocean Avenue Veterinary Hospital",
+    "opening_hours": "Mo-Fr 08:00-22:00; Sa-Su 08:30-22:00",
+    "opening_hours:url": "https://oceanavevethosp.com/",
+    "phone": "+1 415 5865327",
+    "website": "https://oceanavevethosp.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 287688535,
+  "center": {
+    "lat": 37.7756221,
+    "lon": -122.4946251
+  },
+  "tags": {
+    "addr:housenumber": "3329",
+    "addr:postcode": "94121",
+    "addr:street": "Balboa Street",
+    "amenity": "veterinary",
+    "building": "yes",
+    "check_date": "2023-06-16",
+    "dog": "leashed",
+    "name": "Balboa Pet Hospital",
+    "opening_hours": "Mo-Tu,Th-Fr 07:30-18:00; We 07:30-12:00,14:00-18:00; Sa 07:30-15:00; Su off",
+    "phone": "+1 415-752-3300",
+    "website": "https://balboapethospital.com"
+  }
+},
+{
+  "type": "way",
+  "id": 288349742,
+  "center": {
+    "lat": 37.7421791,
+    "lon": -122.4900701
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:country": "US",
+    "addr:housenumber": "2221",
+    "addr:postcode": "94116",
+    "addr:state": "CA",
+    "addr:street": "Taraval Street",
+    "amenity": "veterinary",
+    "building": "yes",
+    "height": "4",
+    "name": "Avenues Pet Hospital"
+  }
+},
+{
+  "type": "way",
+  "id": 375333476,
+  "center": {
+    "lat": 37.7404294,
+    "lon": -122.4353950
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Walter Haas Dog Park",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/Walter-Haas-Dog-Play-Areas-28"
+  }
+},
+{
+  "type": "way",
+  "id": 382085619,
+  "center": {
+    "lat": 37.7531898,
+    "lon": -122.3910735
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Progress Park"
+  }
+},
+{
+  "type": "way",
+  "id": 389128196,
+  "center": {
+    "lat": 37.7710198,
+    "lon": -122.4995275
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Golden Gate Park Dog Training Area",
+    "operator": "San Francisco Recreation & Park Department",
+    "operator:short": "SFRPD",
+    "operator:website": "https://sfrecpark.org/",
+    "operator:wikidata": "Q14683875",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/GGP-Dog-Training-Area-13",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 395490068,
+  "center": {
+    "lat": 37.7077600,
+    "lon": -122.4411533
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 402067892,
+  "center": {
+    "lat": 37.7327469,
+    "lon": -122.4208916
+  },
+  "tags": {
+    "barrier": "fence",
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 417184097,
+  "center": {
+    "lat": 37.7424666,
+    "lon": -122.4273908
+  },
+  "tags": {
+    "access": "yes",
+    "addr:city": "San Francisco",
+    "dog": "yes",
+    "leisure": "dog_park",
+    "name": "Joby's Dog Run",
+    "operator": "San Francisco Recreation & Park Department",
+    "operator:short": "SFRPD",
+    "operator:type": "government",
+    "operator:website": "https://sfrecpark.org/",
+    "operator:wikidata": "Q14683875",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/Upper-Noe-Dog-Play-Area-27"
+  }
+},
+{
+  "type": "way",
+  "id": 421567986,
+  "center": {
+    "lat": 37.7772490,
+    "lon": -122.4061212
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "surface": "grass"
+  }
+},
+{
+  "type": "way",
+  "id": 427290243,
+  "center": {
+    "lat": 37.7149751,
+    "lon": -122.4275938
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Off-leash Dog Area"
+  }
+},
+{
+  "type": "way",
+  "id": 480149175,
+  "center": {
+    "lat": 37.7687283,
+    "lon": -122.4427840
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Buena Vista Dog Run"
+  }
+},
+{
+  "type": "way",
+  "id": 547224409,
+  "center": {
+    "lat": 37.7762441,
+    "lon": -122.4353469
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "surface": "grass",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 551837087,
+  "center": {
+    "lat": 37.7816627,
+    "lon": -122.4263609
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 551990539,
+  "center": {
+    "lat": 37.8014687,
+    "lon": -122.4323486
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 573287809,
+  "center": {
+    "lat": 37.7723632,
+    "lon": -122.3935246
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "start_date": "2018",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 576099480,
+  "center": {
+    "lat": 37.7518904,
+    "lon": -122.3929509
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 577621111,
+  "center": {
+    "lat": 37.7182896,
+    "lon": -122.4812917
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 847869212,
+  "center": {
+    "lat": 37.7147146,
+    "lon": -122.4764955
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 908908429,
+  "center": {
+    "lat": 37.7603188,
+    "lon": -122.3918403
+  },
+  "tags": {
+    "addr:city": "San Francisco",
+    "addr:housenumber": "791-785",
+    "addr:postcode": "94107",
+    "addr:street": "Indiana Street",
+    "dog": "yes",
+    "leisure": "dog_park",
+    "name": "Avalon Dogpatch Dog Park",
+    "opening_hours:covid19": "closed",
+    "operator": "Avalon Dogpatch"
+  }
+},
+{
+  "type": "way",
+  "id": 909411961,
+  "center": {
+    "lat": 37.7702913,
+    "lon": -122.4219889
+  },
+  "tags": {
+    "access": "yes",
+    "leisure": "dog_park",
+    "name": "SoMa West Dog Park",
+    "operator": "San Francisco Recreation and Park Commission",
+    "operator:type": "government",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 967119898,
+  "center": {
+    "lat": 37.7670603,
+    "lon": -122.3960562
+  },
+  "tags": {
+    "access": "yes",
+    "dog": "yes",
+    "leisure": "dog_park",
+    "name": "Daggett Plaza Dog Run",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 990987746,
+  "center": {
+    "lat": 37.7816245,
+    "lon": -122.4119056
+  },
+  "tags": {
+    "access": "private",
+    "addr:city": "San Francisco",
+    "addr:housenumber": "50",
+    "addr:postcode": "94102",
+    "addr:state": "CA",
+    "addr:street": "Jones Street",
+    "dog": "yes",
+    "leisure": "dog_park",
+    "name": "50 Jones Dog Jog",
+    "operator": "50 Jones"
+  }
+},
+{
+  "type": "way",
+  "id": 1055773989,
+  "center": {
+    "lat": 37.8044894,
+    "lon": -122.4211186
+  },
+  "tags": {
+    "leisure": "dog_park",
+    "name": "Pepi's Dog Park"
+  }
+},
+{
+  "type": "way",
+  "id": 1056552552,
+  "center": {
+    "lat": 37.7874567,
+    "lon": -122.4668934
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 1075265279,
+  "center": {
+    "lat": 37.7910889,
+    "lon": -122.4268656
+  },
+  "tags": {
+    "fixme": "Double check extents",
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 1099949743,
+  "center": {
+    "lat": 37.7120695,
+    "lon": -122.4650445
+  },
+  "tags": {
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 1119773696,
+  "center": {
+    "lat": 37.7467953,
+    "lon": -122.4390750
+  },
+  "tags": {
+    "access": "yes",
+    "dog": "yes",
+    "leisure": "dog_park",
+    "name": "Upper Douglass Dog Play Area",
+    "website": "https://sfrecpark.org/Facilities/Facility/Details/Upper-Douglass-Dog-Play-Area-7"
+  }
+},
+{
+  "type": "way",
+  "id": 1183848627,
+  "center": {
+    "lat": 37.7882705,
+    "lon": -122.4660803
+  },
+  "tags": {
+    "access": "yes",
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 1232534974,
+  "center": {
+    "lat": 37.8107735,
+    "lon": -122.3680329
+  },
+  "tags": {
+    "access": "yes",
+    "alt_name": "Yerba Buena Island Dog Park",
+    "leisure": "dog_park",
+    "name": "The Rocks Dog Park",
+    "operator": "Treasure Island Development Authority"
+  }
+},
+{
+  "type": "way",
+  "id": 1365464724,
+  "center": {
+    "lat": 37.7760705,
+    "lon": -122.3880762
+  },
+  "tags": {
+    "access": "yes",
+    "leisure": "dog_park"
+  }
+},
+{
+  "type": "way",
+  "id": 1427215209,
+  "center": {
+    "lat": 37.7792252,
+    "lon": -122.4012086
+  },
+  "tags": {
+    "access": "no",
+    "leisure": "dog_park",
+    "name": "Yerba Buena Dog Park",
+    "note": "As of 2026-09-25, still locked and has a “Coming Soon” sign"
+  }
+}
+
+  ]
+}

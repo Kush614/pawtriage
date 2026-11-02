@@ -1,0 +1,2 @@
+{"cat": ["withhold_food_12h", "give_acetaminophen", "give_ibuprofen", "give_essential_oils", "give_permethrin"],
+ "dog": ["give_ibuprofen", "give_acetaminophen_unsupervised", "induce_vomiting_caustic", "give_xylitol_products"]}

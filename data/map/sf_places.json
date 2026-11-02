@@ -1,0 +1,501 @@
+{
+ "source": "\u00a9 OpenStreetMap contributors, ODbL \u2014 fetched 2026-11-02T22:09:28Z",
+ "vets": [
+  {
+   "name": "Seven Hills Veterinary Hospital",
+   "lat": 37.7434801,
+   "lon": -122.4396299,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": "+1-415-642-7200",
+   "addr": "5264 Diamond Heights Boulevard",
+   "osm": "node/3523031625"
+  },
+  {
+   "name": "Healthy Pets",
+   "lat": 37.7369309,
+   "lon": -122.4700042,
+   "opening_hours": "Mo-Fr 08:30-11:30,13:30-17:00; Tu,Th 08:30-12:30,13:30-17:00; Sa 09:30-16:00",
+   "emergency": false,
+   "phone": null,
+   "addr": "373 West Portal Avenue",
+   "osm": "node/3540255700"
+  },
+  {
+   "name": "Omega",
+   "lat": 37.7633456,
+   "lon": -122.4664139,
+   "opening_hours": "Mo-Th 07:30-17:00; Fr-Su off",
+   "emergency": false,
+   "phone": "+1-415-527-3933",
+   "addr": "1333 9th Avenue",
+   "osm": "node/3658310643"
+  },
+  {
+   "name": "Park Animal Hospital",
+   "lat": 37.7656793,
+   "lon": -122.4665873,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": "+1 415-980-7393",
+   "addr": "1207 9th Avenue",
+   "osm": "node/3688683726"
+  },
+  {
+   "name": "Veterinary Vision",
+   "lat": 37.7427552,
+   "lon": -122.4795574,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "1235 Taraval Street",
+   "osm": "node/3781718563"
+  },
+  {
+   "name": "Noe Animal Hospital",
+   "lat": 37.7517663,
+   "lon": -122.427996,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": "+1 415-727-9101",
+   "addr": "3818 24th Street",
+   "osm": "node/3796324453"
+  },
+  {
+   "name": "Nob Hill Cat Clinic",
+   "lat": 37.7908263,
+   "lon": -122.4198021,
+   "opening_hours": "Mo 09:00-18:00; Tu-Fr 08:30-18:00; Sa 09:00-15:00",
+   "emergency": false,
+   "phone": null,
+   "addr": "1540 California Street",
+   "osm": "node/3808454919"
+  },
+  {
+   "name": "San Francisco SPCA Veterinary Hospital - Mission Campus",
+   "lat": 37.7672325,
+   "lon": -122.4124314,
+   "opening_hours": "Mo-Sa 08:00-18:00; Su off",
+   "emergency": false,
+   "phone": "+1 415-554-3030",
+   "addr": "201 Alabama Street",
+   "osm": "node/3940894710"
+  },
+  {
+   "name": "Sunset Veterinary Hospital",
+   "lat": 37.7528858,
+   "lon": -122.503964,
+   "opening_hours": "Mo-Fr 08:00-18:00; Sa 09:00-16:00",
+   "emergency": false,
+   "phone": null,
+   "addr": "3741 Noriega Street",
+   "osm": "node/4214359690"
+  },
+  {
+   "name": "Urban Pet Hospital",
+   "lat": 37.7995453,
+   "lon": -122.4396343,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": null,
+   "osm": "node/4564813980"
+  },
+  {
+   "name": "San Francisco Pet Hospital",
+   "lat": 37.7766196,
+   "lon": -122.4393013,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "1371 Fulton Street",
+   "osm": "node/4852550734"
+  },
+  {
+   "name": "Polk Street Animal Hospital",
+   "lat": 37.7938531,
+   "lon": -122.4212269,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "Polk Street",
+   "osm": "node/9696861037"
+  },
+  {
+   "name": "Animal Farm Pet Hospital",
+   "lat": 37.7112751,
+   "lon": -122.446421,
+   "opening_hours": "Mo-Fr 08:00-20:00; Sa 09:00-19:00; Su 09:00-18:00",
+   "emergency": false,
+   "phone": "+1 415 333 0813",
+   "addr": "5601 Mission Street",
+   "osm": "node/9951891978"
+  },
+  {
+   "name": "Modern Animal",
+   "lat": 37.773247,
+   "lon": -122.4376452,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "401 Divisadero Street",
+   "osm": "node/9953617994"
+  },
+  {
+   "name": "The Castro Animal Hospital",
+   "lat": 37.7690996,
+   "lon": -122.4292904,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": null,
+   "osm": "node/10607121851"
+  },
+  {
+   "name": "Sage veterinary center",
+   "lat": 37.7614721,
+   "lon": -122.4121895,
+   "opening_hours": "24/7",
+   "emergency": true,
+   "phone": "+1 415-566-0540",
+   "addr": "600 Alabama Street",
+   "osm": "node/10635344677"
+  },
+  {
+   "name": "SOMA Animal Hospital",
+   "lat": 37.7740932,
+   "lon": -122.3917413,
+   "opening_hours": "Mo-Fr 07:00-19:00; Sa 08:00-12:30, 13:30-16:00",
+   "emergency": false,
+   "phone": "+1-415-727-9116",
+   "addr": "1110 4th Street",
+   "osm": "node/10806697941"
+  },
+  {
+   "name": "South Park Animal Hospital",
+   "lat": 37.7819839,
+   "lon": -122.3925388,
+   "opening_hours": "Tu-Fr 08:00-19:00; Sa 08:00-16:00",
+   "emergency": false,
+   "phone": "+1 415-523-4404",
+   "addr": null,
+   "osm": "node/10869899313"
+  },
+  {
+   "name": "San Francisco Animal Medical Center",
+   "lat": 37.7912957,
+   "lon": -122.4346366,
+   "opening_hours": "24/7",
+   "emergency": true,
+   "phone": "+1 415-872-1872",
+   "addr": "2343 Fillmore Street",
+   "osm": "node/11523359210"
+  },
+  {
+   "name": "Mission Pet Hospital",
+   "lat": 37.7613075,
+   "lon": -122.4216996,
+   "opening_hours": "Mo-Fr 07:00-19:00; Sa 08:00-18:00; Su off",
+   "emergency": false,
+   "phone": "+1 415-552-1969",
+   "addr": "720 Valencia Street",
+   "osm": "node/12525217981"
+  },
+  {
+   "name": "Especially Cats Veterinary Hospital",
+   "lat": 37.7426415,
+   "lon": -122.4806919,
+   "opening_hours": "Mo-Fr 08:00-17:00; Sa-Su off",
+   "emergency": false,
+   "phone": null,
+   "addr": "1339 Taraval Street",
+   "osm": "way/173104353"
+  },
+  {
+   "name": "Arguello Pet Hospital",
+   "lat": 37.7806368,
+   "lon": -122.4584651,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "530 Arguello Boulevard",
+   "osm": "way/260053217"
+  },
+  {
+   "name": "Irving Pet Hospital",
+   "lat": 37.763982,
+   "lon": -122.473432,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": "+1 415-664-0191",
+   "addr": "1434 Irving Street",
+   "osm": "way/267692311"
+  },
+  {
+   "name": "Ocean Avenue Veterinary Hospital",
+   "lat": 37.7230414,
+   "lon": -122.4533026,
+   "opening_hours": "Mo-Fr 08:00-22:00; Sa-Su 08:30-22:00",
+   "emergency": false,
+   "phone": "+1 415 5865327",
+   "addr": "1001 Ocean Avenue",
+   "osm": "way/282189753"
+  },
+  {
+   "name": "Balboa Pet Hospital",
+   "lat": 37.7756221,
+   "lon": -122.4946251,
+   "opening_hours": "Mo-Tu,Th-Fr 07:30-18:00; We 07:30-12:00,14:00-18:00; Sa 07:30-15:00; Su off",
+   "emergency": false,
+   "phone": "+1 415-752-3300",
+   "addr": "3329 Balboa Street",
+   "osm": "way/287688535"
+  },
+  {
+   "name": "Avenues Pet Hospital",
+   "lat": 37.7421791,
+   "lon": -122.4900701,
+   "opening_hours": null,
+   "emergency": false,
+   "phone": null,
+   "addr": "2221 Taraval Street",
+   "osm": "way/288349742"
+  }
+ ],
+ "dog_parks": [
+  {
+   "name": "Dog park",
+   "lat": 37.7361936,
+   "lon": -122.4848346,
+   "osm": "node/1229112075"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7872677,
+   "lon": -122.3917161,
+   "osm": "node/11021366853"
+  },
+  {
+   "name": "McLaren Park Dog Play Area",
+   "lat": 37.7194526,
+   "lon": -122.4187836,
+   "osm": "node/13567393701"
+  },
+  {
+   "name": "Corona Heights Dog Play Area",
+   "lat": 37.7655424,
+   "lon": -122.4398144,
+   "osm": "way/38025784"
+  },
+  {
+   "name": "Mission Bay Dog Park",
+   "lat": 37.770686,
+   "lon": -122.3991458,
+   "osm": "way/56645382"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7805666,
+   "lon": -122.413677,
+   "osm": "way/128534082"
+  },
+  {
+   "name": "Rincon Hill Dog Park",
+   "lat": 37.7859383,
+   "lon": -122.3904146,
+   "osm": "way/174826283"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7597544,
+   "lon": -122.4364863,
+   "osm": "way/249654585"
+  },
+  {
+   "name": "Dog Play Area",
+   "lat": 37.7696327,
+   "lon": -122.432351,
+   "osm": "way/251442759"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7403686,
+   "lon": -122.3759672,
+   "osm": "way/264552589"
+  },
+  {
+   "name": "Walter Haas Dog Park",
+   "lat": 37.7404294,
+   "lon": -122.435395,
+   "osm": "way/375333476"
+  },
+  {
+   "name": "Progress Park",
+   "lat": 37.7531898,
+   "lon": -122.3910735,
+   "osm": "way/382085619"
+  },
+  {
+   "name": "Golden Gate Park Dog Training Area",
+   "lat": 37.7710198,
+   "lon": -122.4995275,
+   "osm": "way/389128196"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.70776,
+   "lon": -122.4411533,
+   "osm": "way/395490068"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7327469,
+   "lon": -122.4208916,
+   "osm": "way/402067892"
+  },
+  {
+   "name": "Joby's Dog Run",
+   "lat": 37.7424666,
+   "lon": -122.4273908,
+   "osm": "way/417184097"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.777249,
+   "lon": -122.4061212,
+   "osm": "way/421567986"
+  },
+  {
+   "name": "Off-leash Dog Area",
+   "lat": 37.7149751,
+   "lon": -122.4275938,
+   "osm": "way/427290243"
+  },
+  {
+   "name": "Buena Vista Dog Run",
+   "lat": 37.7687283,
+   "lon": -122.442784,
+   "osm": "way/480149175"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7762441,
+   "lon": -122.4353469,
+   "osm": "way/547224409"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7816627,
+   "lon": -122.4263609,
+   "osm": "way/551837087"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.8014687,
+   "lon": -122.4323486,
+   "osm": "way/551990539"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7723632,
+   "lon": -122.3935246,
+   "osm": "way/573287809"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7518904,
+   "lon": -122.3929509,
+   "osm": "way/576099480"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7182896,
+   "lon": -122.4812917,
+   "osm": "way/577621111"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7147146,
+   "lon": -122.4764955,
+   "osm": "way/847869212"
+  },
+  {
+   "name": "Avalon Dogpatch Dog Park",
+   "lat": 37.7603188,
+   "lon": -122.3918403,
+   "osm": "way/908908429"
+  },
+  {
+   "name": "SoMa West Dog Park",
+   "lat": 37.7702913,
+   "lon": -122.4219889,
+   "osm": "way/909411961"
+  },
+  {
+   "name": "Daggett Plaza Dog Run",
+   "lat": 37.7670603,
+   "lon": -122.3960562,
+   "osm": "way/967119898"
+  },
+  {
+   "name": "50 Jones Dog Jog",
+   "lat": 37.7816245,
+   "lon": -122.4119056,
+   "osm": "way/990987746"
+  },
+  {
+   "name": "Pepi's Dog Park",
+   "lat": 37.8044894,
+   "lon": -122.4211186,
+   "osm": "way/1055773989"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7874567,
+   "lon": -122.4668934,
+   "osm": "way/1056552552"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7910889,
+   "lon": -122.4268656,
+   "osm": "way/1075265279"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7120695,
+   "lon": -122.4650445,
+   "osm": "way/1099949743"
+  },
+  {
+   "name": "Upper Douglass Dog Play Area",
+   "lat": 37.7467953,
+   "lon": -122.439075,
+   "osm": "way/1119773696"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7882705,
+   "lon": -122.4660803,
+   "osm": "way/1183848627"
+  },
+  {
+   "name": "The Rocks Dog Park",
+   "lat": 37.8107735,
+   "lon": -122.3680329,
+   "osm": "way/1232534974"
+  },
+  {
+   "name": "Dog park",
+   "lat": 37.7760705,
+   "lon": -122.3880762,
+   "osm": "way/1365464724"
+  },
+  {
+   "name": "Yerba Buena Dog Park",
+   "lat": 37.7792252,
+   "lon": -122.4012086,
+   "osm": "way/1427215209"
+  }
+ ]
+}

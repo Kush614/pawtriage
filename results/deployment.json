@@ -1,0 +1,14 @@
+{
+ "account": "kushise27-y1gkfyqxpn",
+ "model": "accounts/kushise27-y1gkfyqxpn/models/pawtriage-v1-1102-1236",
+ "deployment": "accounts/kushise27-y1gkfyqxpn/deployments/r7u32tol",
+ "created_at": 1793655407.335208,
+ "gpu": {
+  "type": "NVIDIA_B300_288GB",
+  "count": 4,
+  "usd_per_gpu_hour": 15.0
+ },
+ "shape": "accounts/fireworks/deploymentShapes/glm-5p3-flash-rft-b300-fp8block128-w4-p1",
+ "deleted_at": 1793656323.305726,
+ "hours_up": 0.25
+}

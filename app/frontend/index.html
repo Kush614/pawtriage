@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PawTriage</title>
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--ink:#1d2321;--mute:#66706c;--line:#e3ded4;--acc:#22675a;
+--em:#c0392b;--today:#e67e22;--week:#c9a227;--home:#2e8b57;--r:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#141716;--card:#1d2120;--ink:#ebefed;--mute:#9aa6a1;--line:#2d3331;--acc:#5fbfa9}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}header .tag{color:var(--mute);font-size:12px}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}nav button{border:0;background:none;color:var(--mute);padding:6px 10px;border-radius:8px;cursor:pointer;font:inherit}
+nav button.on{background:var(--acc);color:#fff}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1 1 200px}
+label{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:90px}
+button.p{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.s{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:7px 12px;font:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+.banner{background:#fff3cd;color:#6b5300;border:1px solid #f1d27a;border-radius:8px;padding:8px 12px;font-weight:600;margin-bottom:12px}
+.badge{display:inline-block;padding:6px 12px;border-radius:999px;color:#fff;font-weight:700;letter-spacing:.02em}
+.u-emergency_now{background:var(--em)}.u-vet_today{background:var(--today)}.u-vet_this_week{background:var(--week);color:#222}.u-monitor_at_home{background:var(--home)}
+.pills span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 10px;margin:2px;font-size:13px}
+.flag{color:var(--em);font-weight:600}
+.fw{display:inline-flex;gap:6px;align-items:center;background:#1d2321;color:#fff;border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px}
+.fw b{color:#ffb36b}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.cols{grid-template-columns:1fr}}
+.col4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:900px){.col4{grid-template-columns:1fr 1fr}}
+.ans{border:2px solid var(--line);border-radius:10px;padding:10px}.ans.ok{border-color:var(--home)}.ans.bad{border-color:var(--em)}
+.ans h4{margin:0 0 6px}.ans pre{max-height:140px;overflow:auto;font-size:11px;white-space:pre-wrap}
+.check{display:flex;align-items:center;gap:8px;padding:4px 0}.check input{width:auto}
+.muted{color:var(--mute);font-size:13px}
+.media img,.media video{max-width:100%;max-height:340px;border-radius:8px;border:1px solid var(--line)}
+details summary{cursor:pointer;color:var(--acc);font-weight:600}
+pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:8px;font-size:12px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:6px;text-align:left}
+.tablewrap{overflow-x:auto}
+.timer{font-variant-numeric:tabular-nums;font-weight:700}
+.toggle{display:flex;gap:6px;align-items:center}
+.charts img{max-width:100%;background:#fff;border-radius:8px;margin-top:8px}
+.hidden{display:none}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🐾 PawTriage</h1><span class="tag">when to see a vet, and what to do until then. Not a diagnosis.</span>
+  <nav id="nav">
+    <button data-v="pet" class="on">Pet</button><button data-v="triage">Triage</button>
+    <button data-v="tracker">Care plans</button><button data-v="handoff">Vet handoff</button><button data-v="compare">⚔️ Base vs tuned</button><button data-v="replay">🎞️ Fine-tune replay</button><button data-v="model">Model</button><a href="/pawtown"><button>🗺️ PawTown 3D</button></a>
+  </nav>
+</header>
+<main>
+<div id="basebanner" class="banner hidden">BASE MODEL (untuned)</div>
+
+<section id="v-pet">
+  <div class="card">
+    <h3 style="margin-top:0">Pet profile</h3>
+    <div class="row" style="margin-bottom:10px"><div><label>Load demo pet</label><select id="demoPick"></select></div><div><label>Existing pets</label><select id="petPick"></select></div></div>
+    <div class="row">
+      <div><label>Name</label><input id="p_name"></div>
+      <div><label>Species</label><select id="p_species"><option>dog</option><option>cat</option></select></div>
+      <div><label>Breed</label><input id="p_breed"></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label>Age (years)</label><input id="p_age" type="number" step="0.1"></div>
+      <div><label>Weight (kg)</label><input id="p_weight" type="number" step="0.1"></div>
+      <div><label>Medications (comma-separated)</label><input id="p_meds"></div>
+      <div><label>Known conditions</label><input id="p_conds"></div>
+    </div>
+    <p><button class="p" id="savePet">Save &amp; continue →</button> <span id="petMsg" class="muted"></span></p>
+  </div>
+</section>
+
+<section id="v-triage" class="hidden">
+  <div class="card">
+    <div class="row" style="align-items:end">
+      <div><label>Pet</label><div id="curPet" style="font-weight:600">—</div></div>
+      <div class="toggle"><label style="margin:0">Model</label>
+        <select id="modelPick" style="width:auto"><option value="auto">Best available</option><option value="base">Base (untuned)</option></select></div>
+    </div>
+    <label style="margin-top:10px">What's going on?</label>
+    <textarea id="msg" placeholder="e.g. found this patch on her ear, is it serious?"></textarea>
+    <div class="row" style="margin-top:8px">
+      <div><label>Photo</label><input type="file" id="img" accept="image/*" capture="environment"></div>
+      <div><label>Video (≤30s)</label><input type="file" id="vid" accept="video/*" capture="environment"></div>
+    </div>
+    <div class="media" id="preview" style="margin-top:8px"></div>
+    <p><button class="p" id="go">Triage</button> <span id="goMsg" class="muted"></span></p>
+  </div>
+  <div id="result"></div>
+</section>
+
+<section id="v-tracker" class="hidden">
+  <div class="card"><div class="row" style="align-items:center"><h3 style="margin:0">Open care plans</h3>
+  <div style="text-align:right"><button class="s" id="adv">Demo: advance 24h</button></div></div></div>
+  <div id="cases"></div>
+</section>
+
+<section id="v-handoff" class="hidden">
+  <div class="card"><div class="row" style="align-items:end"><div><label>Case</label><select id="hoCase"></select></div>
+  <div><button class="s" id="hoPdf">Download PDF</button></div></div>
+  <pre id="hoMd" style="margin-top:12px">Pick a case.</pre></div>
+</section>
+
+<section id="v-compare" class="hidden">
+  <div class="card"><h3 style="margin-top:0">Same photo, two models, live</h3>
+  <p class="muted">Two real Fireworks calls on identical input: <b>base GLM 5.3 Flash, untuned</b> vs <b>the best mode we can serve right now</b>
+  (base + rubric prompt while the LoRA deployment is off). ≈$0.002 per run.</p>
+  <div class="row" style="align-items:end;gap:10px;display:flex;flex-wrap:wrap">
+   <div style="flex:0 0 110px"><label>Species</label><select id="cmpSpecies"><option>cat</option><option>dog</option></select></div>
+   <div style="flex:1 1 260px"><label>Owner message</label><input id="cmpMsg" value="There's a round bald patch on her face that's getting bigger. Is this serious?"></div>
+   <div style="flex:1 1 200px"><label>Photo</label><input type="file" id="cmpImg" accept="image/*"></div>
+   <div style="flex:0 0 auto"><button class="p" id="cmpGo">Run both</button></div></div>
+   <p class="muted" id="cmpMsgOut"></p></div>
+  <div id="cmpOut"></div>
+</section>
+
+<section id="v-replay" class="hidden">
+  <div class="card"><h3 style="margin-top:0">What the fine-tuned LoRA actually answered</h3>
+  <p class="muted"><b>Recorded</b> answers from the locked 712-row test run (no live call; the 4×B300 LoRA deployment is shut down to save cost).
+  Same photo, same message, four systems. Green border = urgency matches the gold label.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="p" data-rp="wins">Show a fine-tune win</button>
+  <button class="s" data-rp="any">Random photo</button><button class="s" data-rp="losses">Show a fine-tune miss (honesty)</button></div>
+  <p class="muted" id="rpStats"></p></div>
+  <div id="rpOut"></div>
+</section>
+
+<section id="v-model" class="hidden">
+  <div class="card" id="metrics">Loading…</div>
+</section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const nice = s => (s||'').replaceAll('_',' ');
+const URG = {emergency_now:'EMERGENCY: go now', vet_today:'See a vet today', vet_this_week:'See a vet this week', monitor_at_home:'Monitor at home'};
+let state = {pet:null, cfg:null, demo:[], lastCase:null};
+async function api(path, opts={}){ const r = await fetch(path, opts); if(!r.ok){ throw new Error((await r.text()).slice(0,300)); } return r.json(); }
+
+function show(v){ document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden')); $('#v-'+v).classList.remove('hidden');
+  document.querySelectorAll('#nav button[data-v]').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  if(v==='tracker') loadCases(); if(v==='handoff') loadHandoffList(); if(v==='model') loadMetrics(); if(v==='replay' && !$('#rpOut').innerHTML) loadReplay('wins'); }
+document.querySelectorAll('#nav button[data-v]').forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+function fillPet(p){ $('#p_name').value=p.name||''; $('#p_species').value=p.species||'dog'; $('#p_breed').value=p.breed||'';
+  $('#p_age').value=p.age_years??''; $('#p_weight').value=p.weight_kg??''; $('#p_meds').value=(p.meds||[]).join(', '); $('#p_conds').value=(p.conditions||[]).join(', '); }
+const splitList = s => s.split(',').map(x=>x.trim()).filter(Boolean);
+
+async function init(){
+  state.cfg = await api('/config');
+  state.demo = await api('/demo/pets');
+  $('#demoPick').innerHTML = '<option value="">—</option>' + state.demo.map((p,i)=>`<option value="${i}">${p.name} (${p.species}, ${p.breed})</option>`).join('');
+  $('#demoPick').onchange = e => { if(e.target.value!=='') fillPet(state.demo[e.target.value]); };
+  const pets = await api('/pets');
+  $('#petPick').innerHTML = '<option value="">—</option>' + pets.map(p=>`<option value="${p.id}">${p.name} (#${p.id})</option>`).join('');
+  $('#petPick').onchange = async e => { if(!e.target.value) return; state.pet = await api('/pets/'+e.target.value); fillPet(state.pet); setPet(); show('triage'); };
+  updateBanner();
+}
+function updateBanner(){ const base = $('#modelPick').value==='base'; $('#basebanner').classList.toggle('hidden', !base); }
+$('#modelPick').onchange = updateBanner;
+function setPet(){ $('#curPet').textContent = `${state.pet.name} · ${state.pet.species} · ${state.pet.breed} · ${state.pet.age_years}y`; }
+
+$('#savePet').onclick = async () => {
+  const body = {name:$('#p_name').value, species:$('#p_species').value, breed:$('#p_breed').value, age_years:+$('#p_age').value||0,
+    weight_kg:+$('#p_weight').value||0, meds:splitList($('#p_meds').value), conditions:splitList($('#p_conds').value)};
+  try { state.pet = await api('/pets',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}); setPet(); show('triage'); }
+  catch(e){ $('#petMsg').textContent = e.message; }
+};
+
+['#img','#vid'].forEach(id => $(id).onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  if(id==='#img') $('#vid').value=''; else $('#img').value='';
+  const url = URL.createObjectURL(f);
+  $('#preview').innerHTML = id==='#img' ? `<img src="${url}">` : `<video src="${url}" controls muted playsinline></video>`;
+});
+
+$('#go').onclick = async () => {
+  if(!state.pet){ show('pet'); return; }
+  const fd = new FormData(); fd.append('pet_id', state.pet.id); fd.append('message', $('#msg').value || '(no message)'); fd.append('model', $('#modelPick').value);
+  if($('#img').files[0]) fd.append('image', $('#img').files[0]);
+  if($('#vid').files[0]) fd.append('video', $('#vid').files[0]);
+  $('#go').disabled = true; $('#goMsg').innerHTML = '<span class="spinner"></span> triaging…';
+  try { const c = await api('/triage',{method:'POST',body:fd}); state.lastCase=c; $('#result').innerHTML = resultCard(c); wireCard(c); $('#goMsg').textContent=''; }
+  catch(e){ $('#goMsg').textContent = 'Error: '+e.message; }
+  finally { $('#go').disabled = false; }
+};
+
+function countdown(iso){ if(!iso) return '—'; const ms = new Date(iso) - Date.now(); if(ms<=0) return 'RECHECK DUE NOW';
+  const h = Math.floor(ms/36e5), m = Math.floor(ms%36e5/6e4); return h>48 ? `${Math.round(h/24)} days` : `${h}h ${m}m`; }
+
+function resultCard(c){
+  const t = c.latest, r = t.result, checked = new Set(c.checked);
+  const media = t.sheet_url ? `<div class="media"><div class="muted">What the model saw (6 sampled frames):</div><img src="${t.sheet_url}"></div>`
+              : t.image_url ? `<div class="media"><img src="${t.image_url}"></div>` : '';
+  const audit = t.audit || [];
+  return `<div class="card" data-case="${c.id}">
+   ${t.is_base_model ? '<div class="banner">BASE MODEL (untuned)</div>' : ''}
+   <div class="row" style="align-items:center"><div><span class="badge u-${r.urgency}">${URG[r.urgency]}</span>
+   ${r.needs_review ? ' <span class="muted">· flagged for review</span>':''}</div>
+   <div style="text-align:right" class="muted">Recheck in <span class="timer">${countdown(c.recheck_due)}</span> · ${t.latency_ms} ms · $${(t.cost_usd||0).toFixed(5)}</div></div>
+   <p>${fwBadge(t)}</p>
+   ${media}
+   ${(r.red_flags||[]).length ? `<p class="flag">⚠ ${r.red_flags.join(' · ')}</p>` : ''}
+   ${r.image_finding ? `<p><b>Visible in photo/video:</b> ${nice(r.image_finding)}</p>` : ''}
+   <p><b>Possible conditions</b> <span class="muted">(possible, not a diagnosis)</span></p><div class="pills">${(r.conditions||[]).map(x=>`<span>${nice(x)}</span>`).join('')}</div>
+   <p><b>What to do now</b></p>${(r.plan.immediate||[]).map(x=>`<label class="check"><input type="checkbox" data-item="${x}" ${checked.has(x)?'checked':''}> ${nice(x)}</label>`).join('')}
+   <p><b>Watch for</b></p><div class="pills">${(r.plan.watch_for||[]).map(x=>`<span>${nice(x)}</span>`).join('')}</div>
+   ${(r.plan.prevent||[]).length?`<p><b>Prevent</b></p><div class="pills">${r.plan.prevent.map(x=>`<span>${nice(x)}</span>`).join('')}</div>`:''}
+   <div class="row" style="margin-top:12px;align-items:end"><div><label>Report a change</label><input class="fu" placeholder="e.g. now she's vomiting too"></div><div style="flex:0 0 auto"><button class="s fub">Send update</button></div></div>
+   <details style="margin-top:12px"><summary>Why?</summary>
+     <p class="muted">Model: ${t.model} · mode: ${({sft:'fine-tuned LoRA',rubric:'base + rubric prompt (fine-tune offline)',base:'base, untuned'})[t.mode]||t.mode}</p>
+     ${audit.length ? '<ul>'+audit.map(a=>`<li><b>${a.rule}</b> ${Object.entries(a).filter(([k])=>k!=='rule').map(([k,v])=>`${k}: ${Array.isArray(v)?v.join(', '):v}`).join(' · ')}</li>`).join('')+'</ul>' : '<p class="muted">No safety rules fired; model output used as-is.</p>'}
+     <pre>${(t.raw||'').replace(/[<&]/g, ch => ({'<':'&lt;','&':'&amp;'}[ch]))}</pre>
+   </details>
+   ${c.turns.length>1 ? `<p class="muted">History: ${c.turns.map(x=>nice(x.result.urgency)).join(' → ')}</p>`:''}
+  </div>`;
+}
+function wireCard(c, container=$('#result')){
+  const card = container.querySelector(`[data-case="${c.id}"]`);
+  card.querySelectorAll('input[type=checkbox]').forEach(cb => cb.onchange = () => api(`/cases/${c.id}/plan/check`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({item:cb.dataset.item})}));
+  card.querySelector('.fub').onclick = async (e) => { const m = card.querySelector('.fu').value; if(!m) return; e.target.disabled=true; e.target.textContent='…';
+    const nc = await api(`/cases/${c.id}/followup`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:m, model:$('#modelPick').value})});
+    card.outerHTML = resultCard(nc); wireCard(nc, container); };
+}
+
+async function loadCases(){
+  const cs = await api('/cases');
+  $('#cases').innerHTML = cs.length ? cs.map(c => `<div class="card"><b>${c.pet?.name}</b> · case #${c.id} · ${c.turns[0]?.message?.slice(0,80)}</div>` + resultCard(c)).join('') : '<div class="card muted">No cases yet.</div>';
+  cs.forEach(c => wireCard(c, $('#cases')));
+}
+$('#adv').onclick = async () => { await api('/demo/advance_time?hours=24',{method:'POST'}); loadCases(); };
+
+async function loadHandoffList(){
+  const cs = await api('/cases');
+  $('#hoCase').innerHTML = cs.map(c=>`<option value="${c.id}">#${c.id} ${c.pet?.name}: ${nice(c.latest?.result?.urgency)}</option>`).join('');
+  $('#hoCase').onchange = showHandoff; if(cs.length) showHandoff();
+}
+async function showHandoff(){ const id=$('#hoCase').value; if(!id) return; $('#hoMd').textContent = (await api(`/cases/${id}/handoff`)).markdown; }
+$('#hoPdf').onclick = () => { const id=$('#hoCase').value; if(id) location.href = `/cases/${id}/handoff?format=pdf`; };
+
+async function loadMetrics(){
+  const m = await api('/metrics');
+  if(!m.available){ $('#metrics').innerHTML = '<p class="muted">No results yet. Run notebooks 05 and 06.</p>'; return; }
+  const S = m.summary, pct = x => x==null?'—':(x*100).toFixed(1)+'%';
+  let h = `<h3 style="margin-top:0">Locked test set: base vs fine-tuned</h3>`;
+  for (const mod of ['text','image','all','video']) {
+    const rows = Object.entries(S).filter(([n,e]) => e.metrics[mod]?.n);
+    if(!rows.length) continue;
+    h += `<h4>${mod} rows ${mod==='video'?'<span class="muted">(n small, no significance claim)</span>':''}</h4><div class="tablewrap"><table><tr><th>system</th><th>n</th><th>urgency acc</th><th>under-triage</th><th>harmful</th><th>top-1 cond</th><th>$/1k chats</th><th>p95 ms</th><th>McNemar p</th><th>95% CI (pp)</th></tr>`;
+    for (const [n,e] of rows){ const x=e.metrics[mod], v=e.vs_base?.[mod]?.urgency_correct;
+      h += `<tr><td>${n}</td><td>${x.n}</td><td>${pct(x.urgency_correct)}</td><td>${pct(x.under_triage)}</td><td>${pct(x.harmful_advice)}</td><td>${pct(x.cond_top1_hit)}</td><td>$${e.cost.usd_per_1k_chats?.toFixed(3)}</td><td>${e.cost.p95_latency_ms}</td>
+      <td>${v?.mcnemar ? v.mcnemar.p_exact.toPrecision(2) : '—'}</td><td>${v?.bootstrap?.mean_gap!=null ? `${(v.bootstrap.mean_gap*100).toFixed(1)} [${(v.bootstrap.ci_low*100).toFixed(1)}, ${(v.bootstrap.ci_high*100).toFixed(1)}]` : '—'}</td></tr>`; }
+    h += '</table></div>';
+  }
+  h += `<div class="charts"><img src="/charts/mcnemar.png" onerror="this.remove()"><img src="/charts/bootstrap.png" onerror="this.remove()"></div>`;
+  $('#metrics').innerHTML = h;
+}
+init();
+
+const MODE = {sft:'fine-tuned LoRA', rubric:'GLM 5.3 Flash + rubric', base:'GLM 5.3 Flash, untuned'};
+function fwBadge(t){ return `<span class="fw">⚡ Fireworks · ${MODE[t.mode]||t.mode||''} · <b>$${(t.cost_usd||0).toFixed(4)}</b> · <b>${((t.latency_ms||0)/1000).toFixed(1)} s</b></span>`; }
+function miniAnswer(title, o, gold){
+  const r=o.result||{}, fb=(o.audit||[]).some(a=>a.rule==='fallback'), ok=gold? r.urgency===gold : null;
+  return `<div class="ans ${ok===null?'':ok?'ok':'bad'}"><h4>${title}</h4>${fwBadge(o)}
+   ${fb?'<p class="flag">Output did not parse: fail-safe "see a vet today" shown instead</p>':''}
+   ${(o.audit||[]).filter(a=>a.rule==='salvaged').map(a=>`<p class="muted">⚠ Off-vocabulary output repaired (strict scorer would reject it): dropped ${(a.dropped||[]).join(', ')||'nothing'}</p>`).join('')}
+   <p><span class="badge u-${r.urgency}">${URG[r.urgency]||r.urgency}</span></p>
+   ${r.image_finding?`<p><b>Saw:</b> ${nice(r.image_finding)}</p>`:''}
+   <div class="pills">${(r.conditions||[]).slice(0,3).map(x=>`<span>${nice(x)}</span>`).join('')}</div>
+   <p class="muted">Do now: ${(r.plan?.immediate||[]).map(nice).join(' · ')||'none'}</p>
+   <details><summary class="muted">raw output</summary><pre>${(o.raw||'').replace(/[<&]/g,c=>({'<':'&lt;','&':'&amp;'}[c]))}</pre></details></div>`; }
+$('#cmpGo').onclick = async () => {
+  const fd=new FormData(); fd.append('species',$('#cmpSpecies').value); fd.append('message',$('#cmpMsg').value);
+  if($('#cmpImg').files[0]) fd.append('image',$('#cmpImg').files[0]);
+  $('#cmpGo').disabled=true; $('#cmpMsgOut').textContent='Calling both models in parallel…';
+  try{ const d=await api('/compare',{method:'POST',body:fd});
+    $('#cmpOut').innerHTML=`<div class="card">${d.image_url?`<div class="media" style="text-align:center"><img src="${d.image_url}"></div>`:''}
+      <div class="cols" style="margin-top:10px">${miniAnswer('Base, untuned',d.base)}${miniAnswer('PawTriage (best available)',d.best)}</div>
+      <p class="muted">Total for this comparison: $${((d.base.cost_usd||0)+(d.best.cost_usd||0)).toFixed(4)}</p></div>`;
+    $('#cmpMsgOut').textContent=''; }
+  catch(e){ $('#cmpMsgOut').textContent='Error: '+e.message; } finally{ $('#cmpGo').disabled=false; } };
+const SYSN = {base:'Base, untuned', harness_rubric:'Base + rubric prompt', sft:'Fine-tuned LoRA', sft_safety:'LoRA + safety rules'};
+async function loadReplay(pick){
+  try{ const d=await api(`/replay?pick=${pick}&n=1&seed=${Math.floor(Math.random()*1e6)}`); const r=d.rows[0], g=r.gold;
+    const c=d.correct_by_system, n=d.image_rows;
+    $('#rpStats').innerHTML=`Photo rows in the locked test set: ${n}. Urgency correct: `+Object.keys(SYSN).filter(k=>k in c).map(k=>`${SYSN[k]} <b>${Math.round(100*c[k]/n)}%</b>`).join(' · ');
+    $('#rpOut').innerHTML=`<div class="card"><div class="cols"><div class="media"><img src="${r.image_url}"></div>
+      <div><p><b>${r.species}</b> · <span class="muted">${r.id}</span></p><p>“${r.message.replace(/</g,'&lt;')}”</p>
+      <p><b>Gold label:</b> <span class="badge u-${g.urgency}">${URG[g.urgency]}</span></p><p class="muted">expected finding: ${nice(g.image_finding)} · ${g.conditions.slice(0,2).map(nice).join(', ')}</p></div></div>
+      <div class="col4" style="margin-top:12px">${Object.keys(SYSN).filter(k=>r.answers[k]).map(k=>{const a=r.answers[k];
+        return `<div class="ans ${a.urgency_correct?'ok':'bad'}"><h4>${SYSN[k]}</h4>
+          ${a.parse_error?`<p class="flag">unparseable output</p>`:`<p><span class="badge u-${a.pred_urgency}">${URG[a.pred_urgency]||a.pred_urgency}</span></p>`}
+          ${a.image_finding?`<p class="muted">saw: ${nice(a.image_finding)}</p>`:''}<p class="muted">${a.latency_ms} ms</p>
+          <details><summary class="muted">raw</summary><pre>${(a.raw||'').replace(/[<&]/g,c=>({'<':'&lt;','&':'&amp;'}[c]))}</pre></details></div>`}).join('')}</div>
+      <p class="muted">Recorded on the locked test set. Gold labels are rubric-derived; the set was not human-reviewed (see README caveats).</p></div>`; }
+  catch(e){ $('#rpOut').innerHTML=`<div class="card">Replay unavailable: ${e.message}</div>`; } }
+document.querySelectorAll('[data-rp]').forEach(b=>b.onclick=()=>loadReplay(b.dataset.rp));
+if(location.hash.length>1 && document.getElementById('v-'+location.hash.slice(1))) show(location.hash.slice(1));
+try{ const v=sessionStorage.getItem('ptView'); if(v){ sessionStorage.removeItem('ptView'); show(v); } }catch(e){}
+</script>
+</body>
+</html>

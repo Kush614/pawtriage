@@ -1,0 +1,13 @@
+{
+ "pid": 4420,
+ "run_id": "1102-1236",
+ "output_model_id": "pawtriage-v1-1102-1236",
+ "log_dir": "/Users/kush/pawtriage/results/sft_logs/1102-1236",
+ "n_rows": 2639,
+ "n_text": 1479,
+ "n_image_unique": 1160,
+ "image_upsample": 1,
+ "image_frac": 0.44,
+ "prompt_hash": "1496329eb49a3a76",
+ "path": "/Users/kush/pawtriage/data/splits/sft_train.jsonl"
+}

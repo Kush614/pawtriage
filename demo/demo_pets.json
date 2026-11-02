@@ -1,0 +1,3 @@
+[{"name": "Miso", "species": "cat", "breed": "domestic shorthair", "age_years": 4, "weight_kg": 4.6, "meds": [], "conditions": []},
+ {"name": "Biscuit", "species": "dog", "breed": "labrador retriever", "age_years": 7, "weight_kg": 31, "meds": ["carprofen (vet-prescribed, as needed)"], "conditions": ["mild hip arthritis"]},
+ {"name": "Pepper", "species": "dog", "breed": "dachshund", "age_years": 3, "weight_kg": 8.5, "meds": [], "conditions": []}]
