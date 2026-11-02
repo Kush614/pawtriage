@@ -142,6 +142,8 @@ A household ("Den") has several caregivers (parent, co-parent, helper/dog walker
 | Fog over SF clears as the Den finishes care steps | Visual progress |
 | Neighborhood health weather | Anonymous contagion counts, hidden below 3 reports (privacy) |
 
+Sound: every pet and game sound is **synthesized live with the Web Audio API** (no audio files). Meows, size-matched barks, purrs, a whimper when the double-dose guard fires, a siren plus howl when emergency mode starts, a camera shutter on a live scan, a coin for care points, a fanfare for badges, and soft Ocean Beach waves. Sick pets whimper instead of barking, and idle chatter stops during an emergency. Toggle with 🔊.
+
 Map: cartoon SF in Three.js (r160) with neighborhood islands at real coordinates and primitive landmarks. Vets (26, 2 tagged 24h/emergency) and dog parks (39) are **real OpenStreetMap data** (© OSM contributors, ODbL), fetched once into `data/map/sf_places.json`; no vet is invented. Hours come from OSM and may be stale, so the UI says to call ahead.
 Demo: **Seed demo Den** runs one real photo triage (≈$0.001); **Demo: Pepper ate chocolate** runs one real text triage that hits the toxin rule and triggers emergency mode. Needs WebGL (headless browsers usually lack it).
 

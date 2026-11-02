@@ -4,6 +4,7 @@
 - `.venv/bin/uvicorn app.backend.main:app --port 8031`
 - Clean slate: `curl -X POST localhost:8031/demo/reset` → open http://localhost:8031/pawtown → **Seed demo Den** (1 real photo triage, ≈$0.001) → **+ Walker's 2nd Den** (no model call).
 - Tabs ready: `/pawtown`, `/pawtown#lab`, `/#replay`, `/#compare`; the live scanner `?key=` link on your phone.
+- **Sound:** turn the laptop volume up, click once anywhere on the map to enable audio, and check the HUD shows 🔊 Sound. Use 🔇 to mute while you talk over the Lab.
 - Live calls in this script: ≈4 × $0.001. Needs a real browser (WebGL).
 
 | Time | Show | Say |

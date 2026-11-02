@@ -89,6 +89,7 @@
   <button class="ghost" id="btnEmerg" title="Real triage call (≈$0.001): text that should trigger the emergency rules">Demo: Pepper ate chocolate</button>
   <a href="/" style="pointer-events:auto"><button class="ghost">Triage app ↗</button></a>
   <a id="scanLink" target="_blank" style="pointer-events:auto;display:none"><button class="ghost" title="Scans of a pet whose name matches a Den pet land here as a case">📷 Live scan ↗</button></a>
+  <button class="ghost" id="btnSound" title="Synthesized pet + game sounds">🔊 Sound</button>
   <button id="btnPanel">Den ▸</button>
 </div>
 
@@ -370,6 +371,86 @@ function drawRoute() {
   flyTo(mid.clone().setY(G), 70);
 }
 
+// ---------------------------------------------------------------- sound: all synthesized with Web Audio (no audio files, nothing to license)
+const SFX = (() => {
+  let ctx = null, master = null, on = true, ambient = null;
+  try { on = localStorage.getItem('ptSound') !== 'off'; } catch (e) {}
+  const ensure = () => {
+    if (!on) return null;
+    if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const comp = ctx.createDynamicsCompressor(); master = ctx.createGain(); master.gain.value = .55;
+      master.connect(comp); comp.connect(ctx.destination); }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const noiseBuf = () => { const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; };
+  let NB = null; const noise = () => { NB = NB || noiseBuf(); const s = ctx.createBufferSource(); s.buffer = NB; s.loop = true; return s; };
+  const env = (g, t, a, peak, hold, rel) => { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.setValueAtTime(peak, t + a + hold); g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + rel); return t + a + hold + rel; };
+  const tone = (type, f0, f1, t, dur, vol = .3, dest = master) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f0, t); if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur); o.connect(g); g.connect(dest);
+    const end = env(g, t, .01, vol, dur * .4, dur * .6); o.start(t); o.stop(end + .05); };
+
+  function meow(p = 1, at = 0) { if (!ensure()) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 6;
+    const g = ctx.createGain(); const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 7; lg.gain.value = 12 * p;
+    lfo.connect(lg); lg.connect(o.frequency);
+    o.frequency.setValueAtTime(480 * p, t); o.frequency.exponentialRampToValueAtTime(820 * p, t + .18); o.frequency.exponentialRampToValueAtTime(430 * p, t + .7);
+    f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(2600, t + .2); f.frequency.exponentialRampToValueAtTime(800, t + .7);
+    o.connect(f); f.connect(g); g.connect(master); const end = env(g, t, .06, .5, .35, .35);
+    o.start(t); lfo.start(t); o.stop(end); lfo.stop(end); }
+  function woof(size = 1, at = 0) { if (!ensure()) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(260 / size, t); o.frequency.exponentialRampToValueAtTime(140 / size, t + .16);
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(2200 / Math.sqrt(size), t); f.frequency.exponentialRampToValueAtTime(500, t + .18); f.Q.value = 4;
+    const g = ctx.createGain(); o.connect(f); f.connect(g); g.connect(master); const end = env(g, t, .008, .7, .05, .12);
+    const n = noise(), nf = ctx.createBiquadFilter(), ng = ctx.createGain(); nf.type = 'bandpass'; nf.frequency.value = 1200 / size; nf.Q.value = 1.2;
+    n.connect(nf); nf.connect(ng); ng.connect(master); env(ng, t, .005, .35, .03, .08);
+    o.start(t); o.stop(end + .02); n.start(t); n.stop(end + .02); }
+  const bark = (size = 1, at = 0) => { woof(size, at); woof(size * 1.05, at + .22); };
+  function whimper(p = 1, at = 0) { if (!ensure()) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(); o.type = 'triangle'; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 9; lg.gain.value = 25;
+    lfo.connect(lg); lg.connect(o.frequency); o.frequency.setValueAtTime(1000 * p, t); o.frequency.exponentialRampToValueAtTime(650 * p, t + .7);
+    const g = ctx.createGain(); o.connect(g); g.connect(master); const end = env(g, t, .08, .18, .3, .35); o.start(t); lfo.start(t); o.stop(end); lfo.stop(end); }
+  function howl(at = 0) { if (!ensure()) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(); o.type = 'sine'; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 5; lg.gain.value = 14;
+    lfo.connect(lg); lg.connect(o.frequency); o.frequency.setValueAtTime(380, t); o.frequency.exponentialRampToValueAtTime(720, t + .6); o.frequency.exponentialRampToValueAtTime(520, t + 1.6);
+    const g = ctx.createGain(); o.connect(g); g.connect(master); const end = env(g, t, .25, .3, .9, .5); o.start(t); lfo.start(t); o.stop(end); lfo.stop(end); }
+  function purr(at = 0, dur = 1.6) { if (!ensure()) return; const t = ctx.currentTime + at;
+    const n = noise(), f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 260;
+    const am = ctx.createGain(); am.gain.value = 0; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 26; lg.gain.value = .5;
+    lfo.connect(lg); lg.connect(am.gain); const g = ctx.createGain(); n.connect(f); f.connect(am); am.connect(g); g.connect(master);
+    const end = env(g, t, .2, .9, dur, .4); n.start(t); lfo.start(t); n.stop(end); lfo.stop(end); }
+  function chime(notes = [784, 988, 1319], at = 0, step = .09, vol = .22) { if (!ensure()) return;
+    notes.forEach((n, i) => { tone('triangle', n, null, ctx.currentTime + at + i * step, .5, vol); tone('sine', n * 2, null, ctx.currentTime + at + i * step, .3, vol * .3); }); }
+  const coin = (at = 0) => { if (!ensure()) return; tone('square', 988, null, ctx.currentTime + at, .07, .12); tone('square', 1319, null, ctx.currentTime + at + .07, .25, .12); };
+  const fanfare = () => chime([523, 659, 784, 1047, 1319], 0, .11, .25);
+  function buzz() { if (!ensure()) return; const t = ctx.currentTime; tone('sawtooth', 140, 110, t, .22, .25); tone('sawtooth', 140, 100, t + .28, .3, .25); }
+  function shutter() { if (!ensure()) return; const t = ctx.currentTime;
+    [0, .09].forEach(dt => { const n = noise(), f = ctx.createBiquadFilter(), g = ctx.createGain(); f.type = 'highpass'; f.frequency.value = 2500;
+      n.connect(f); f.connect(g); g.connect(master); const end = env(g, t + dt, .002, .5, .01, .05); n.start(t + dt); n.stop(end + .01); }); }
+  function whoosh(at = 0) { if (!ensure()) return; const t = ctx.currentTime + at; const n = noise(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    f.type = 'bandpass'; f.Q.value = 2; f.frequency.setValueAtTime(300, t); f.frequency.exponentialRampToValueAtTime(3000, t + .5);
+    n.connect(f); f.connect(g); g.connect(master); const end = env(g, t, .15, .35, .15, .3); n.start(t); n.stop(end); }
+  function siren(cycles = 4) { if (!ensure()) return; const t = ctx.currentTime; const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle';
+    for (let i = 0; i < cycles * 2; i++) o.frequency.setValueAtTime(i % 2 ? 960 : 720, t + i * .4);
+    o.connect(g); g.connect(master); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + .05);
+    g.gain.setValueAtTime(.22, t + cycles * .8 - .2); g.gain.exponentialRampToValueAtTime(.0001, t + cycles * .8); o.start(t); o.stop(t + cycles * .8 + .05); }
+  function startAmbient() { if (!ensure() || ambient) return; const n = noise(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    f.type = 'lowpass'; f.frequency.value = 420; const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .09; lg.gain.value = .025;
+    g.gain.value = .035; lfo.connect(lg); lg.connect(g.gain); n.connect(f); f.connect(g); g.connect(master); n.start(); lfo.start(); ambient = { n, lfo }; }
+  function stopAmbient() { if (ambient) { try { ambient.n.stop(); ambient.lfo.stop(); } catch (e) {} ambient = null; } }
+  // a pet's own voice: cats meow (sick: soft whimper-meow + no purr), dogs bark by size (sick: whimper)
+  function voice(p, mood) { if (!p) return; const small = /dachshund|chihuahua|terrier|pug|poodle|shih|yorkie|corgi|beagle/i.test(p.breed || '');
+    const sick = mood === 'sick';
+    if (p.species === 'cat') { if (sick) meow(.85); else { meow(1 + (p.id % 3) * .08); if (Math.random() < .5) purr(.8, 1); } }
+    else if (sick) whimper(small ? 1.15 : .9); else bark(small ? .7 : 1.35); }
+  return { get on() { return on; },
+    set(v) { on = v; try { localStorage.setItem('ptSound', v ? 'on' : 'off'); } catch (e) {} if (v) { ensure(); startAmbient(); } else stopAmbient(); },
+    unlock() { if (on) { ensure(); startAmbient(); } },
+    meow, bark, woof, whimper, howl, purr, chime, coin, fanfare, buzz, shutter, whoosh, siren, voice };
+})();
+
 // ---------------------------------------------------------------- UI
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -387,7 +468,9 @@ async function refresh(force = false) {
   const d = await api(`/dens/${denId}` + (viewAs ? `?as_member=${viewAs}` : ''));
   const sig = JSON.stringify(d);
   if (!force && sig === lastSig) return;
+  const prevEm = emergency, prevBadges = new Set((den?.badges || []).map(b => b.id)), prevTop = den?.events?.[0]?.at, prevDen = den?.id;
   lastSig = sig; den = d; emergency = d.emergency;
+  if (prevDen === d.id) soundForChanges(prevEm, prevBadges, prevTop);
   if (!viewAs || !d.members.find(m => m.id === viewAs)) { viewAs = d.members[0]?.id; }
   $('viewAs').innerHTML = d.members.map(m => `<option value="${m.id}" ${m.id === viewAs ? 'selected' : ''}>${m.emoji} ${esc(m.name)} (${m.role})</option>`).join('');
   $('denName').textContent = '· ' + d.name + ' · ' + d.neighborhood;
@@ -452,7 +535,7 @@ function renderPanel() {
   el.querySelectorAll('[data-done]').forEach(b => b.onclick = () => doneQuest(+b.dataset.done));
   el.querySelectorAll('[data-assign]').forEach(s => s.onchange = async () => { await api(`/quests/${s.dataset.assign}/assign`, { method: 'POST', body: JSON.stringify({ member_id: s.value ? +s.value : null }) }); refresh(); });
   $('btnNote').onclick = async () => { const t = $('noteText').value.trim(); if (!t) return;
-    await api(`/dens/${den.id}/notes`, { method: 'POST', body: JSON.stringify({ member_id: viewAs, pet_id: +$('notePet').value, text: t }) }); toast('Logged to the Den and the vet packet'); refresh(); };
+    await api(`/dens/${den.id}/notes`, { method: 'POST', body: JSON.stringify({ member_id: viewAs, pet_id: +$('notePet').value, text: t }) }); SFX.chime([880, 1175], 0, .08, .15); toast('Logged to the Den and the vet packet'); refresh(); };
   if ($('btnMed')) $('btnMed').onclick = async () => {
     const pet = den.pets.find(p => p.id === selPet) || den.pets[0]; const name = prompt(`Medication for ${pet.name} (as prescribed by your vet):`); if (!name) return;
     const every = +prompt('Every how many hours?', '12') || 24;
@@ -466,15 +549,31 @@ async function loadWeather() {
     + `<p>Counts are anonymous and hidden below ${w.min_reports} reports, so no single household can be identified.</p>` : 'No contagious reports this week.';
 }
 
+function petById(id) { return den?.pets.find(p => p.id === id); }
+function soundForChanges(prevEm, prevBadges, prevTop) {
+  if (!SFX.on) return;
+  if (emergency && !prevEm) { SFX.siren(4); setTimeout(() => SFX.howl(), 800); return; }
+  if (!emergency && prevEm) { SFX.chime([523, 659, 784], 0, .15); setTimeout(() => SFX.purr(0, 1.2), 500); }
+  const fresh = prevTop ? den.events.filter(e => e.at > prevTop) : [];
+  const kinds = new Set(fresh.map(e => e.kind));
+  if (kinds.has('scan')) { SFX.shutter(); const p = petById(fresh.find(e => e.kind === 'scan').pet_id); setTimeout(() => SFX.voice(p), 350); }
+  else if (kinds.has('case')) { SFX.chime([659, 880], 0, .12, .18); }
+  if (kinds.has('contagion')) setTimeout(() => SFX.whoosh(), 600);
+  const nb = (den.badges || []).filter(b => !prevBadges.has(b.id));
+  if (nb.length && prevBadges.size + nb.length > 0 && fresh.length) setTimeout(() => { SFX.fanfare(); toast(`🏅 Badge: ${nb[0].name}`); }, 900);
+}
+
 async function doneQuest(id) {
   const r = await api(`/quests/${id}/done`, { method: 'POST', body: JSON.stringify({ member_id: viewAs }) });
   if (r.double_dose) {
+    SFX.buzz(); const q = den.quests.find(x => x.id === id); setTimeout(() => SFX.whimper(1, 0), 450);
     toast(`🛑 Stopped: ${r.given_by} already gave this dose ${r.minutes_ago} min ago. Don't give it again; call your vet if unsure.`, 7000);
-  } else if (r.ok && !r.already) toast(`+${r.points} care points`);
+  } else if (r.ok && !r.already) { toast(r.points ? `+${r.points} care points` : 'Logged (points paused during an emergency)');
+    const q = den.quests.find(x => x.id === id); if (r.points) SFX.coin(); setTimeout(() => SFX.voice(petById(q?.pet_id)), 250); }
   refresh();
 }
 
-function selectPet(id) { selPet = id; renderPanel(); const o = petObjs.find(g => g.userData.p.id === id); if (o) flyTo(o.position, 22); }
+function selectPet(id) { const p = petById(id); SFX.voice(p, p?.case && p.case.urgency !== 'monitor_at_home' ? 'sick' : 'happy'); selPet = id; renderPanel(); const o = petObjs.find(g => g.userData.p.id === id); if (o) flyTo(o.position, 22); }
 
 function renderEmergency() {
   const card = $('emergCard'), ring = $('emerg');
@@ -490,7 +589,7 @@ function renderEmergency() {
     <p>If a toxin is involved, the ASPCA Animal Poison Control line is <a href="tel:+18884264435">(888) 426-4435</a> (a fee may apply).</p>
     <p style="opacity:.85">The game is paused: no care points are earned and other quests wait. Only getting to care counts now.</p>
     <button id="btnOnWay">We're on our way</button>`;
-  $('btnOnWay').onclick = async () => { await fetch(`/cases/${emergency.case_id}/at_vet?member_id=${viewAs}`, { method: 'POST' }); toast('Logged. The vet packet has the full timeline. Go safely.'); refresh(true); };
+  $('btnOnWay').onclick = async () => { SFX.chime([523, 659, 784, 1047], 0, .12); await fetch(`/cases/${emergency.case_id}/at_vet?member_id=${viewAs}`, { method: 'POST' }); toast('Logged. The vet packet has the full timeline. Go safely.'); refresh(true); };
 }
 
 async function openLab() {
@@ -526,7 +625,7 @@ async function renderWalker() {
 
 // demo buttons
 $('btnSeed').onclick = async () => { $('btnSeed').disabled = true; toast('Creating Den and running one real photo triage…', 9000);
-  try { const r = await api('/demo/seed_den', { method: 'POST' }); denId = r.den_id; viewAs = null; await refresh(true); toast('Den ready: ringworm found in Miso, so every pet got a quest'); }
+  try { const r = await api('/demo/seed_den', { method: 'POST' }); denId = r.den_id; viewAs = null; await refresh(true); SFX.bark(1.3); SFX.meow(1, .5); toast('Den ready: ringworm found in Miso, so every pet got a quest'); }
   catch (e) { toast('Seed failed: ' + e.message); } $('btnSeed').disabled = false; };
 $('btnTime').onclick = async () => { await api('/demo/advance_time?hours=24', { method: 'POST' }); toast('Demo clock +24h'); refresh(true); };
 $('btnEmerg').onclick = async () => {
@@ -539,6 +638,15 @@ $('btnEmerg').onclick = async () => {
 $('denPick').onchange = () => { denId = +$('denPick').value; viewAs = null; refresh(true).then(() => flyTo(denCenter(), 45)); };
 $('btnWalker').onclick = async () => { const r = await api('/demo/seed_walker', { method: 'POST' }); toast("Added The Noe Valley Den. View the first Den as Jordan to see the walker's route across both."); refresh(true); };
 $('viewAs').onchange = () => { viewAs = +$('viewAs').value; refresh(true); };
+const paintSound = () => $('btnSound').textContent = SFX.on ? '🔊 Sound' : '🔇 Sound';
+$('btnSound').onclick = () => { SFX.set(!SFX.on); paintSound(); if (SFX.on) SFX.bark(1.2); };
+paintSound();
+addEventListener('pointerdown', () => SFX.unlock(), { once: true });
+setInterval(() => { // idle chatter: a random healthy pet speaks now and then; never during an emergency
+  if (!SFX.on || emergency || !den || document.hidden || Math.random() < .5) return;
+  const p = den.pets[Math.floor(Math.random() * den.pets.length)];
+  SFX.voice(p, p?.case && p.case.urgency !== 'monitor_at_home' ? 'sick' : 'happy');
+}, 14000);
 $('btnPanel').onclick = () => $('panel').classList.toggle('collapsed');
 
 // ---------------------------------------------------------------- picking + camera
@@ -549,12 +657,14 @@ renderer.domElement.addEventListener('click', e => {
   if (!hit) { pop.style.display = 'none'; return; }
   const u = hit.object.userData;
   if (u.type === 'pet') { selectPet(u.p.id); pop.style.display = 'none'; return; }
-  if (u.type === 'lab') { pop.style.display = 'none'; openLab(); return; }
+  if (u.type === 'lab') { pop.style.display = 'none'; SFX.whoosh(); setTimeout(() => SFX.fanfare(), 250); openLab(); return; }
   let html = '';
   if (u.type === 'vet') { const v = u.v;
     html = `<b>${esc(v.name)}</b>${v.emergency ? ' <span class="pill u-emergency_now">24h / emergency</span>' : ''}<br>
       ${v.addr ? esc(v.addr) + '<br>' : ''}${v.opening_hours ? '🕒 ' + esc(v.opening_hours) + '<br>' : ''}${v.phone ? '📞 ' + esc(v.phone) + '<br>' : ''}
       <span class="muted">OSM ${esc(v.osm)}: hours may be out of date, call ahead.</span>`; }
+  if (u.type === 'vet') SFX.chime(u.v.emergency ? [880, 660] : [660, 880], 0, .1, .18);
+  if (u.type === 'park') { SFX.bark(1.1); }
   if (u.type === 'park') html = `<b>🐕 ${esc(u.d.name)}</b><br><span class="muted">Dog park (OSM ${esc(u.d.osm)}). If a Den pet is contagious, skip the park until the vet clears them.</span>`;
   pop.innerHTML = html; pop.style.display = 'block'; pop.style.left = Math.min(e.clientX + 12, innerWidth - 270) + 'px'; pop.style.top = (e.clientY + 12) + 'px';
 });
