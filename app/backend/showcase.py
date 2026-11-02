@@ -15,7 +15,7 @@ from .store import Pet
 
 ROOT = Path(__file__).resolve().parents[2]
 router = APIRouter()
-SYSTEMS = ["base", "harness_rubric", "sft", "sft_safety"]
+SYSTEMS = ["base", "harness_rubric", "frontier", "sft", "sft_safety"]
 _REPLAY: dict | None = None
 
 

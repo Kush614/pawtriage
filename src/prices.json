@@ -23,6 +23,11 @@
    "input_per_m": 0.0,
    "output_per_m": 0.0,
    "_note": "dedicated 4xB300 deployment; billed per GPU-hour, see deployment_usd_per_1k"
+  },
+  "openai/gpt-6.1-terra-pro": {
+   "input_per_m": 1.0,
+   "output_per_m": 5.0,
+   "_note": "OpenRouter list price, fetched from openrouter.ai/api/v1/models 2026-11-02"
   }
  }
 }

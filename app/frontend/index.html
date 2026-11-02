@@ -29,7 +29,7 @@ button:disabled{opacity:.5;cursor:wait}
 .flag{color:var(--em);font-weight:600}
 .fw{display:inline-flex;gap:6px;align-items:center;background:#1d2321;color:#fff;border-radius:999px;padding:5px 12px;font-weight:700;font-size:13px}
 .fw b{color:#ffb36b}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.cols{grid-template-columns:1fr}}
-.col4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:900px){.col4{grid-template-columns:1fr 1fr}}
+.col4{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}@media(max-width:900px){.col4{grid-template-columns:1fr 1fr}}
 .ans{border:2px solid var(--line);border-radius:10px;padding:10px}.ans.ok{border-color:var(--home)}.ans.bad{border-color:var(--em)}
 .ans h4{margin:0 0 6px}.ans pre{max-height:140px;overflow:auto;font-size:11px;white-space:pre-wrap}
 .check{display:flex;align-items:center;gap:8px;padding:4px 0}.check input{width:auto}
@@ -284,7 +284,7 @@ $('#cmpGo').onclick = async () => {
       <p class="muted">Total for this comparison: $${((d.base.cost_usd||0)+(d.best.cost_usd||0)).toFixed(4)}</p></div>`;
     $('#cmpMsgOut').textContent=''; }
   catch(e){ $('#cmpMsgOut').textContent='Error: '+e.message; } finally{ $('#cmpGo').disabled=false; } };
-const SYSN = {base:'Base, untuned', harness_rubric:'Base + rubric prompt', sft:'Fine-tuned LoRA', sft_safety:'LoRA + safety rules'};
+const SYSN = {base:'Base, untuned', harness_rubric:'Base + rubric prompt', frontier:'Frontier (GPT-6.1)', sft:'Fine-tuned LoRA', sft_safety:'LoRA + safety rules'};
 async function loadReplay(pick){
   try{ const d=await api(`/replay?pick=${pick}&n=1&seed=${Math.floor(Math.random()*1e6)}`); const r=d.rows[0], g=r.gold;
     const c=d.correct_by_system, n=d.image_rows;

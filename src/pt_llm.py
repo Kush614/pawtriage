@@ -18,7 +18,7 @@ from pt_prompt import ROOT
 load_dotenv(ROOT / ".env", override=False)
 
 FIREWORKS_URL = "https://api.fireworks.ai/inference/v1"
-OPENROUTER_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")  # any OpenAI-compatible router
 CACHE_DIR = ROOT / "results" / "cache"
 
 

@@ -488,7 +488,7 @@ function renderEmergency() {
        <a href="https://www.google.com/maps/dir/?api=1&destination=${er.v.lat},${er.v.lon}" target="_blank">Directions ↗</a></p>`
        : `<p>No 24h vet is tagged in the OpenStreetMap data, so none is shown. Search "emergency vet near me".</p>`}
     <p>If a toxin is involved, the ASPCA Animal Poison Control line is <a href="tel:+18884264435">(888) 426-4435</a> (a fee may apply).</p>
-    <p style="opacity:.85">The game is paused: streaks and quests are frozen. Only getting to care counts now.</p>
+    <p style="opacity:.85">The game is paused: no care points are earned and other quests wait. Only getting to care counts now.</p>
     <button id="btnOnWay">We're on our way</button>`;
   $('btnOnWay').onclick = async () => { await fetch(`/cases/${emergency.case_id}/at_vet?member_id=${viewAs}`, { method: 'POST' }); toast('Logged. The vet packet has the full timeline. Go safely.'); refresh(true); };
 }
@@ -496,7 +496,7 @@ function renderEmergency() {
 async function openLab() {
   const m = await api('/metrics'); const el = $('lab'); el.style.display = 'block';
   const S = m.summary || {}; const pct = x => x == null ? '–' : (100 * x).toFixed(1) + '%';
-  const NAMES = { base: 'Base GLM 5.3 Flash', harness_rubric: 'Base + rubric prompt', sft: 'Fine-tuned LoRA', sft_safety: 'LoRA + safety rules' };
+  const NAMES = { base: 'Base GLM 5.3 Flash', harness_rubric: 'Base + rubric prompt', frontier: 'Frontier: GPT-6.1 Terra Pro', sft: 'Fine-tuned LoRA', sft_safety: 'LoRA + safety rules' };
   const rows = Object.keys(NAMES).filter(k => S[k]).map(k => { const x = S[k].metrics, c = S[k].vs_base?.all?.urgency_correct;
     return `<tr><td><b>${NAMES[k]}</b></td><td>${pct(x.all?.urgency_correct)}</td><td>${pct(x.image?.urgency_correct)}</td><td>${pct(x.text?.urgency_correct)}</td>
       <td>${pct(x.all?.under_triage ?? x.text?.under_triage)}</td><td>${c?.mcnemar?.p_exact != null ? Number(c.mcnemar.p_exact).toExponential(1) : '–'}</td><td>${c?.bootstrap ? `[${(100*c.bootstrap.ci_low).toFixed(1)}, ${(100*c.bootstrap.ci_high).toFixed(1)}] pp` : '–'}</td></tr>`; }).join('');
@@ -507,6 +507,7 @@ async function openLab() {
     <table><tr><th>System</th><th>All</th><th>Photos</th><th>Text</th><th>Under-triage</th><th>p vs base</th><th>95% CI of gain</th></tr>${rows}</table>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px">
       <img src="/charts/bootstrap.png" alt="bootstrap CIs"><img src="/charts/mcnemar.png" alt="McNemar"></div>
+    <p><b>vs frontier (GPT-6.1 Terra Pro):</b> LoRA + safety 87.1% vs 69.0% overall (+18.1 pp, CI [+4.6, +33.0]); photos 93.0% vs 53.2%; text is a tie, and the frontier model under-triages less. Frontier p95 latency 10.9 s vs 2.4 s.</p>
     <p class="muted">Honest read: the LoRA wins big on photos; the rubric-prompted base still beats it on text (its rubric overlaps the test scenarios).
       The live app currently serves base + rubric (≈$0.001/triage) because the LoRA needs a 4×B300 deployment (~$60/h).</p>
     <p><a href="/#replay"><button class="ghost">🎞️ See the LoRA's recorded answers</button></a>

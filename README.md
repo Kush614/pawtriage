@@ -10,11 +10,14 @@
 
 **Headline: on photos, the fine-tuned GLM 5.3 Flash gets urgency right 93.0% of the time vs 26.3% for the base model (+66.7 pp, McNemar p = 3e-61, 95% cluster-bootstrap CI [+53.5, +79.5]). With the safety layer, all rows: 87.1% vs 42.7%.**
 
+**vs a frontier model (GPT-6.1 Terra Pro via OpenRouter, same prompt, same 712 rows):** the fine-tune + safety layer wins overall, **87.1% vs 69.0%** (+18.1 pp, 95% CI [+4.6, +33.0], McNemar p = 5e-18), and on photos, **93.0% vs 53.2%** (+39.7 pp, CI [+20.2, +59.6]). On text it's a statistical tie (82.5% vs 81.2%, CI [-10.8, +12.5]), and **the frontier model under-triages less** (0% vs 16.7%: it over-calls urgency instead). It's ~5× slower (p95 10.9 s vs 2.4 s) and costs more per chat (below).
+
 #### All rows (text + image)
 | system | urgency acc | under-triage | harmful advice | top-1 cond | plan recall | $/1k chats | p95 ms | McNemar p | bootstrap 95% CI (pp) | real gain |
 |---|---|---|---|---|---|---|---|---|---|---|
 | base | 42.7% | 31.7% | 0.0% | 45.4% | 46.6% | $0.330 | 2339 | — | — | — |
 | harness_rubric | 83.3% | 5.8% | 0.0% | 75.6% | 83.7% | $1.019 | 3344 | 3.7e-63 | +40.6 [+31.3, +51.2] | yes |
+| frontier | 69.0% | 0.0% | 0.0% | 77.5% | 69.9% | $9.627 | 10929 | 1.7e-33 | +26.3 [+14.9, +37.9] | yes |
 | sft | 84.1% | 25.4% | 0.0% | 76.1% | 74.0% | $1.814 | 2386 | 7.2e-61 | +41.4 [+25.9, +57.2] | yes |
 | sft_safety | 87.1% | 16.7% | 0.0% | 76.1% | 74.9% | $1.814 | 2386 | 3.7e-75 | +44.4 [+32.2, +58.3] | yes |
 
@@ -23,6 +26,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | base | 55.5% | 31.7% | 0.0% | 67.8% | 60.1% | $0.330 | 2339 | — | — | — |
 | harness_rubric | 90.0% | 5.8% | 0.0% | 90.2% | 89.9% | $1.019 | 3344 | 1.3e-28 | +34.5 [+22.8, +49.2] | yes |
+| frontier | 81.2% | 0.0% | 0.0% | 91.2% | 77.1% | $9.627 | 10929 | 5.6e-19 | +25.8 [+10.0, +43.2] | yes |
 | sft | 77.2% | 25.4% | 0.0% | 72.8% | 66.1% | $1.814 | 2386 | 1.7e-12 | +21.8 [+1.8, +40.0] | yes |
 | sft_safety | 82.5% | 16.7% | 0.0% | 72.8% | 67.7% | $1.814 | 2386 | 8.4e-21 | +27.0 [+16.8, +41.0] | yes |
 
@@ -31,6 +35,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | base | 26.3% | — | 0.0% | 16.7% | 29.3% | $0.330 | 2339 | — | — | — |
 | harness_rubric | 74.7% | — | 0.0% | 56.7% | 75.8% | $1.019 | 3344 | 3.2e-36 | +48.4 [+36.2, +63.1] | yes |
+| frontier | 53.2% | — | 0.0% | 59.9% | 60.7% | $9.627 | 10929 | 1e-15 | +26.9 [+12.5, +41.0] | yes |
 | sft | 93.0% | — | 0.0% | 80.5% | 84.1% | $1.814 | 2386 | 2.6e-61 | +66.7 [+53.5, +79.5] | yes |
 | sft_safety | 93.0% | — | 0.0% | 80.5% | 84.1% | $1.814 | 2386 | 2.6e-61 | +66.7 [+53.5, +79.5] | yes |
 
@@ -41,7 +46,8 @@
 - **Safety-layer bug found and fixed during evaluation:** rules did not fire when the model's JSON failed to parse. Fixed in `pt_safety.apply` (rules now build an emergency answer); the numbers above are post-fix. Known gap, *found by reading test failures and deliberately not patched* to avoid tuning on the test set: the xylitol regex misses "sugarfree", "candies", brand names (Orbit, Trident) and "pudding".
 - Harmful advice was 0% for every system: no model emitted a never-list item, so the never-list filter is untested by this benchmark.
 - **Cost:** base/harness are serverless per-token. Fireworks can't serve a LoRA serverless, so the fine-tune's $/1k is a dedicated 4×B300 ($60/h) at the throughput we measured (~33k chats/h at concurrency 16, a mostly idle GPU). It drops with utilisation or multi-LoRA sharing; it is not a like-for-like per-token number.
-- **Not scored:** `sft_router` (the large router model rejected an image input; cut per the scope valve), `frontier` (no OpenRouter key), video (no labelled clips).
+- **Frontier cost:** the table's $9.63/1k is computed from OpenRouter list prices ($1/$5 per M tokens) × measured tokens; OpenRouter actually billed **$2.97 for all 712 rows ≈ $4.17/1k**. Head-to-head vs frontier (all systems, McNemar + bootstrap) is in `results/vs_frontier.json`.
+- **Not scored:** `sft_router` (the large router model rejected an image input; cut per the scope valve), video (no labelled clips).
 - Only 10 text scenarios and 8 image classes in the test set: intervals are wide by construction.
 
 ![discordant pairs](results/charts/mcnemar.png)
@@ -107,7 +113,7 @@ App: `.venv/bin/uvicorn app.backend.main:app --port 8031` → http://localhost:8
 ## Business case
 
 **Users:** vet clinics' after-hours lines, telehealth triage nurses, and pet-care / pet-insurance apps. All of them answer "is this an emergency?" thousands of times a day.
-**Value math (assumptions written out).** Measured on our test set: base GLM 5.3 Flash serverless **$0.33 / 1k chats**; base + rubric prompt **$1.02 / 1k**; fine-tune on a dedicated 4×B300 **$1.81 / 1k at the throughput we measured** (33k chats/h at concurrency 16, a mostly idle GPU; at full utilisation or with multi-LoRA sharing this falls). Assume a telehealth line doing 10k triage chats/day: that's $3–18/day in model cost for PawTriage. **We did not measure a frontier model** (no OpenRouter key), so we make no savings claim against one. The value we *can* show is accuracy per dollar on photos: 93% urgency accuracy vs 26% for the same base model at the same prompt. Under-triage is the cost that matters clinically, so we report it separately, and the safety layer only ever *raises* urgency.
+**Value math (assumptions written out).** Measured on our test set: base GLM 5.3 Flash serverless **$0.33 / 1k chats**; base + rubric prompt **$1.02 / 1k**; fine-tune on a dedicated 4×B300 **$1.81 / 1k at the throughput we measured** (33k chats/h at concurrency 16, a mostly idle GPU; at full utilisation or with multi-LoRA sharing this falls). Assume a telehealth line doing 10k triage chats/day: that's $3–18/day in model cost for PawTriage. **Against a frontier model** (GPT-6.1 Terra Pro, measured on the same test set): it billed ≈$4.17/1k chats and scored 69.0%, so PawTriage's fine-tune + safety is **more accurate (87.1%) at under half the cost and ~5× lower latency**. Base + rubric at $1.02/1k also beats it (83.3%). The value we *can* show is accuracy per dollar on photos: 93% urgency accuracy vs 26% for the same base model at the same prompt. Under-triage is the cost that matters clinically, so we report it separately, and the safety layer only ever *raises* urgency.
 **Why open weights:** an order of magnitude cheaper per chat, deployable in the clinic's own account, and patient (pet) data and photos stay with the clinic.
 
 ## Caveats
@@ -116,7 +122,7 @@ App: `.venv/bin/uvicorn app.backend.main:app --port 8031` → http://localhost:8
 - The test set was locked **without** the planned two-person human review.
 - One training run, one seed. English only.
 - The image "healthy" classes are mostly whole-pet photos while disease classes are close-ups, so the model may partly learn framing. Dog bacterial vs fungal look alike at thumbnail size.
-- Video n is small; numbers are shown with a wide interval and **no significance claim**.
+- Video: no labelled clips yet, so **no video numbers** are reported (see Data above).
 - Follow-up outcomes are logged but the model has **not yet been retrained** on them.
 
 ## PawTown SF: shared pet care as a 3D game (`/pawtown`)

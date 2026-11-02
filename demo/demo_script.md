@@ -9,7 +9,7 @@
 | Time | Show | Say |
 |---|---|---|
 | 0:00 | PawTown, the Den over the Mission | "SF has more dogs than kids. Most pets have several caregivers: partners, roommates, a dog walker. Nobody knows who gave the meds, or when 'watch it' becomes 'go now'." |
-| 0:15 | `/pawtown#lab` | "We fine-tuned GLM 5.3 Flash with a vision LoRA on Fireworks serverless training. On a locked 712-row test set, split by scenario: photos **93% vs 26%** for the base model, p ≈ 7e-61. With safety rules, **87% vs 43%** overall, CI [+32, +58] pp. Honest part: the rubric-prompted base still beats the LoRA on text." |
+| 0:15 | `/pawtown#lab` | "We fine-tuned GLM 5.3 Flash with a vision LoRA on Fireworks serverless training. On a locked 712-row test set, split by scenario: photos **93% vs 26%** for the base model, p ≈ 7e-61. With safety rules, **87% vs 43%** overall, CI [+32, +58] pp. And against a frontier model, GPT-6.1 Terra Pro: **87% vs 69%**, photos **93% vs 53%**, at under half the cost and a fifth of the latency. Honest part: on text it's a tie, and the frontier model under-triages less." |
 | 0:45 | `/#replay` → **Show a fine-tune win** | "These are the LoRA's real recorded answers. The base model often can't even produce a valid answer on photos; 63% of its photo outputs failed our schema." Click **Show a fine-tune miss** once: "and here's where it's wrong." |
 | 1:05 | Phone: live scanner, pet name "Miso", point at the ringworm photo | "The voice agent and camera never change. Only the model behind `/scan` does." Yellow report appears. |
 | 1:25 | Back to PawTown | Within 5 s: "📷 Live scan of Miso" in the log; contagion quests for Biscuit, Pepper and the humans. The ⚡ chip shows **$0.0010 · 1.6 s**. |

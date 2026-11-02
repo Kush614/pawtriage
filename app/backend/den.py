@@ -417,6 +417,8 @@ def done(qid: int, body: DoneIn):
                 return {"ok": False, "double_dose": True, "given_by": by.name if by else None, "minutes_ago": mins}
         if q.status == "done":
             return {"ok": True, "already": True}
+        if emergency_state(s, q.den_id) and not (q.kind == "immediate" and q.case_id == emergency_state(s, q.den_id)["case_id"]):
+            q.points = 0  # emergency: the game is paused, only the emergency's own steps count
         q.status, q.done_by, q.done_at = "done", body.member_id, now()
         s.add(q)
         log(s, q.den_id, "quest_done", f"{m.name} · {q.title}", member_id=body.member_id, pet_id=q.pet_id, case_id=q.case_id)
