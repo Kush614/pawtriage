@@ -90,6 +90,7 @@
   <a href="/" style="pointer-events:auto"><button class="ghost">Triage app ↗</button></a>
   <a id="scanLink" target="_blank" style="pointer-events:auto;display:none"><button class="ghost" title="Scans of a pet whose name matches a Den pet land here as a case">📷 Live scan ↗</button></a>
   <button class="ghost" id="btnSound" title="Synthesized pet + game sounds">🔊 Sound</button>
+  <button class="ghost" id="btnMusic" title="Background music (original, synthesized live)">🎵 Music</button>
   <button id="btnPanel">Den ▸</button>
 </div>
 
@@ -451,6 +452,58 @@ const SFX = (() => {
     meow, bark, woof, whimper, howl, purr, chime, coin, fanfare, buzz, shutter, whoosh, siren, voice };
 })();
 
+// ---------------------------------------------------------------- background music: an original 8-bar loop, synthesized live
+const MUSIC = (() => {
+  let ctx = null, bus = null, on = true, playing = false, timer = null, step = 0, nextT = 0, ducked = false;
+  try { on = localStorage.getItem('ptMusic') !== 'off'; } catch (e) {}
+  const BPM = 104, EIGHTH = 60 / BPM / 2, VOL = .16;
+  const mf = m => 440 * Math.pow(2, (m - 69) / 12);
+  // I–V–vi–IV, then a turnaround: C G Am F | C G F C
+  const CHORDS = [[48, 52, 55], [43, 47, 50], [45, 48, 52], [41, 45, 48], [48, 52, 55], [43, 47, 50], [41, 45, 48], [48, 52, 55]];
+  const MEL = [[72, 76, 79, 76], [74, 71, 74, null], [72, 76, 81, 79], [77, 76, 72, null],
+               [79, 76, 72, 76], [74, 71, 67, 71], [72, 69, 72, 77], [76, 74, 72, null]];
+  const ensure = () => { if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); bus = ctx.createGain(); bus.gain.value = 0;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5000; bus.connect(lp); lp.connect(ctx.destination); }
+    if (ctx.state === 'suspended') ctx.resume(); return ctx; };
+  let NB = null;
+  const noise = () => { if (!NB) { NB = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = NB.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const s = ctx.createBufferSource(); s.buffer = NB; return s; };
+  const pluck = (f, t, dur, vol, type = 'triangle', bright = 4) => { const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+    o.type = type; o.frequency.value = f; o2.type = 'sine'; o2.frequency.value = f * bright; g2.gain.value = .18;
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(bus);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.start(t); o2.start(t); o.stop(t + dur + .02); o2.stop(t + dur + .02); };
+  const whistle = (f, t, dur, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = f; l.frequency.value = 5.5; lg.gain.value = f * .008; l.connect(lg); lg.connect(o.frequency); o.connect(g); g.connect(bus);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .04); g.gain.setValueAtTime(vol, t + dur * .6); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.start(t); l.start(t); o.stop(t + dur + .02); l.stop(t + dur + .02); };
+  const hat = (t, vol) => { const n = noise(), f = ctx.createBiquadFilter(), g = ctx.createGain(); f.type = 'highpass'; f.frequency.value = 7000;
+    n.connect(f); f.connect(g); g.connect(bus); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + .04); n.start(t); n.stop(t + .05); };
+  const kick = (t, vol) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(48, t + .12);
+    o.connect(g); g.connect(bus); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + .18); o.start(t); o.stop(t + .2); };
+  function schedule() {
+    while (nextT < ctx.currentTime + .2) {
+      const bar = Math.floor(step / 8) % 8, e = step % 8, ch = CHORDS[bar], t = nextT;
+      // marimba arpeggio (8ths): root 5th oct 3rd 5th oct 3rd 5th
+      const arp = [ch[0] + 12, ch[2] + 12, ch[0] + 24, ch[1] + 12, ch[2] + 12, ch[0] + 24, ch[1] + 24, ch[2] + 12];
+      pluck(mf(arp[e]), t, .35, .11);
+      if (e === 0 || e === 4) { pluck(mf(ch[0] - 12 + 12), t, .5, .16, 'triangle', 2); kick(t, .22); }  // bass + soft kick
+      if (e === 6) pluck(mf(ch[2]), t, .3, .08, 'triangle', 2);                                         // bass walk-up
+      if (e % 2 === 1) hat(t, .03);
+      if (e % 2 === 0) { const m = MEL[bar][e / 2]; if (m) whistle(mf(m), t, EIGHTH * 1.8, .055); }      // whistled melody
+      nextT += EIGHTH; step++;
+    }
+  }
+  const fadeTo = (v, s = 1.2) => { if (!ctx) return; const t = ctx.currentTime; bus.gain.cancelScheduledValues(t); bus.gain.setValueAtTime(bus.gain.value, t); bus.gain.linearRampToValueAtTime(v, t + s); };
+  function start() { if (!on || playing) return; ensure(); playing = true; nextT = ctx.currentTime + .1; step = 0;
+    timer = setInterval(schedule, 25); fadeTo(ducked ? 0 : VOL, 2); }
+  function stop() { if (!playing) return; fadeTo(0, .6); setTimeout(() => { clearInterval(timer); playing = false; }, 700); }
+  return { get on() { return on; },
+    set(v) { on = v; try { localStorage.setItem('ptMusic', v ? 'on' : 'off'); } catch (e) {} v ? start() : stop(); },
+    unlock() { if (on) start(); },
+    duck(d) { ducked = d; if (playing) fadeTo(d ? 0 : VOL, d ? .8 : 3); } };
+})();
+
 // ---------------------------------------------------------------- UI
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -468,6 +521,7 @@ async function refresh(force = false) {
   const d = await api(`/dens/${denId}` + (viewAs ? `?as_member=${viewAs}` : ''));
   const sig = JSON.stringify(d);
   if (!force && sig === lastSig) return;
+  if (!!d.emergency !== !!emergency || (d.emergency && !den)) MUSIC.duck(!!d.emergency);
   const prevEm = emergency, prevBadges = new Set((den?.badges || []).map(b => b.id)), prevTop = den?.events?.[0]?.at, prevDen = den?.id;
   lastSig = sig; den = d; emergency = d.emergency;
   if (prevDen === d.id) soundForChanges(prevEm, prevBadges, prevTop);
@@ -638,6 +692,10 @@ $('btnEmerg').onclick = async () => {
 $('denPick').onchange = () => { denId = +$('denPick').value; viewAs = null; refresh(true).then(() => flyTo(denCenter(), 45)); };
 $('btnWalker').onclick = async () => { const r = await api('/demo/seed_walker', { method: 'POST' }); toast("Added The Noe Valley Den. View the first Den as Jordan to see the walker's route across both."); refresh(true); };
 $('viewAs').onchange = () => { viewAs = +$('viewAs').value; refresh(true); };
+const paintMusic = () => $('btnMusic').textContent = MUSIC.on ? '🎵 Music' : '🎵 Off';
+$('btnMusic').onclick = () => { MUSIC.set(!MUSIC.on); paintMusic(); };
+paintMusic();
+addEventListener('pointerdown', () => MUSIC.unlock(), { once: true });
 const paintSound = () => $('btnSound').textContent = SFX.on ? '🔊 Sound' : '🔇 Sound';
 $('btnSound').onclick = () => { SFX.set(!SFX.on); paintSound(); if (SFX.on) SFX.bark(1.2); };
 paintSound();
